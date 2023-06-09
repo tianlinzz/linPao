@@ -8,7 +8,7 @@ import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.domain.request.UserLoginRequest;
 import com.tianlin.linpaobackend.model.domain.request.UserRegisterRequest;
-import com.tianlin.linpaobackend.service.UserService;
+import com.tianlin.linpaobackend.service.User.UserService;
 import com.tianlin.linpaobackend.utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;

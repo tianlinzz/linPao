@@ -1,4 +1,4 @@
-package com.tianlin.linpaobackend.service;
+package com.tianlin.linpaobackend.service.User;
 
 import com.tianlin.linpaobackend.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;

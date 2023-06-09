@@ -1,4 +1,4 @@
-package com.tianlin.linpaobackend.service.impl;
+package com.tianlin.linpaobackend.service.User.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -6,7 +6,7 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.service.UserService;
+import com.tianlin.linpaobackend.service.User.UserService;
 import com.tianlin.linpaobackend.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
