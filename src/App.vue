@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { watchEffect } from 'vue'
-import Layout from './components/Layout/index.vue'
-import { useTitleStore } from './stores/title'
+import {useRoute} from 'vue-router'
+import {watchEffect} from 'vue'
+import {useTitleStore} from './stores/title'
 
 const titleStore = useTitleStore()
-const { setTitle } = titleStore
+const {setTitle} = titleStore
 
 const route = useRoute()
 
@@ -20,9 +19,5 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Layout>
-    <template #content>
-      <router-view />
-    </template>
-  </Layout>
+  <router-view/>
 </template>
