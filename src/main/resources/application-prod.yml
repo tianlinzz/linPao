@@ -1,0 +1,9 @@
+# prod，生产环境配置文件
+spring:
+  application:
+    name: user-center
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: 'xxxxxxxxx' # 配置生产环境数据库，这里使用的是本地数据库
+    username: root
+    password: 'xxxxx' # 配置生产环境数据库密码，上线最好不要暴露密码
