@@ -1,6 +1,6 @@
-package com.tianlin.usercenter.service;
+package com.tianlin.linpaobackend.service;
 
-import com.tianlin.usercenter.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;

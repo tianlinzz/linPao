@@ -1,7 +1,7 @@
-package com.tianlin.usercenter.exception;
+package com.tianlin.linpaobackend.exception;
 
 
-import com.tianlin.usercenter.common.ErrorCode;
+import com.tianlin.linpaobackend.common.ErrorCode;
 
 /**
  * 自定义异常

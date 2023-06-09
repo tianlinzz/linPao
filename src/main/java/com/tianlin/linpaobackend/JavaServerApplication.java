@@ -1,11 +1,11 @@
-package com.tianlin.usercenter;
+package com.tianlin.linpaobackend;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.tianlin.usercenter.mapper")
+@MapperScan("com.tianlin.linpaobackend.mapper")
 public class JavaServerApplication {
 
     public static void main(String[] args) {

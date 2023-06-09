@@ -1,6 +1,6 @@
-package com.tianlin.usercenter.mapper;
+package com.tianlin.linpaobackend.mapper;
 
-import com.tianlin.usercenter.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

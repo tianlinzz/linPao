@@ -1,4 +1,4 @@
-package com.tianlin.usercenter.model.domain;
+package com.tianlin.linpaobackend.model.domain;
 
 
 import com.baomidou.mybatisplus.annotation.*;

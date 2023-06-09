@@ -1,6 +1,6 @@
-package com.tianlin.usercenter.utils;
+package com.tianlin.linpaobackend.utils;
 
-import com.tianlin.usercenter.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

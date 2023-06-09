@@ -1,15 +1,15 @@
-package com.tianlin.usercenter.controller;
+package com.tianlin.linpaobackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.tianlin.usercenter.common.BaseResponse;
-import com.tianlin.usercenter.common.ErrorCode;
-import com.tianlin.usercenter.common.ResultUtils;
-import com.tianlin.usercenter.exception.BusinessException;
-import com.tianlin.usercenter.model.domain.User;
-import com.tianlin.usercenter.model.domain.request.UserLoginRequest;
-import com.tianlin.usercenter.model.domain.request.UserRegisterRequest;
-import com.tianlin.usercenter.service.UserService;
-import com.tianlin.usercenter.utils.JwtUtil;
+import com.tianlin.linpaobackend.common.BaseResponse;
+import com.tianlin.linpaobackend.common.ErrorCode;
+import com.tianlin.linpaobackend.common.ResultUtils;
+import com.tianlin.linpaobackend.exception.BusinessException;
+import com.tianlin.linpaobackend.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.request.UserLoginRequest;
+import com.tianlin.linpaobackend.model.domain.request.UserRegisterRequest;
+import com.tianlin.linpaobackend.service.UserService;
+import com.tianlin.linpaobackend.utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tianlin.usercenter.constant.UserConstant.ADMIN_ROLE;
+import static com.tianlin.linpaobackend.constant.UserConstant.ADMIN_ROLE;
 
 
 /**

@@ -1,7 +1,7 @@
 # prod，生产环境配置文件
 spring:
   application:
-    name: user-center
+    name: lin-pao-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: 'xxxxxxxxx' # 配置生产环境数据库，这里使用的是本地数据库

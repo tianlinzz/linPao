@@ -1,4 +1,4 @@
-package com.tianlin.usercenter.common;
+package com.tianlin.linpaobackend.common;
 
 /**
  * 返回结果工具类

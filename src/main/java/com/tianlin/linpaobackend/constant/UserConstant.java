@@ -1,4 +1,4 @@
-package com.tianlin.usercenter.constant;
+package com.tianlin.linpaobackend.constant;
 
 /**
  * 用户常量

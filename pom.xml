@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.tianlin</groupId>
-    <artifactId>user-center</artifactId>
+    <artifactId>lin-pao-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>java-server</name>
     <description>java-server</description>

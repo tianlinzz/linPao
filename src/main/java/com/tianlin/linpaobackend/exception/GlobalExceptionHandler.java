@@ -1,8 +1,8 @@
-package com.tianlin.usercenter.exception;
+package com.tianlin.linpaobackend.exception;
 
-import com.tianlin.usercenter.common.BaseResponse;
-import com.tianlin.usercenter.common.ErrorCode;
-import com.tianlin.usercenter.common.ResultUtils;
+import com.tianlin.linpaobackend.common.BaseResponse;
+import com.tianlin.linpaobackend.common.ErrorCode;
+import com.tianlin.linpaobackend.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

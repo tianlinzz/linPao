@@ -1,4 +1,4 @@
-package com.tianlin.usercenter.common;
+package com.tianlin.linpaobackend.common;
 
 /**
  * 全局错误码
