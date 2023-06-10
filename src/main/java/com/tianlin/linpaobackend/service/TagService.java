@@ -1,4 +1,4 @@
-package com.tianlin.linpaobackend.service.Tag;
+package com.tianlin.linpaobackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tianlin.linpaobackend.model.domain.Tag;

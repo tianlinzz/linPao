@@ -1,6 +1,7 @@
 package com.tianlin.linpaobackend.service.User;
 
 import com.tianlin.linpaobackend.model.domain.User;
+import com.tianlin.linpaobackend.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
