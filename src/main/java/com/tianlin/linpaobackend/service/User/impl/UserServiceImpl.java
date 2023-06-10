@@ -2,6 +2,8 @@ package com.tianlin.linpaobackend.service.User.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
@@ -16,7 +18,10 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -211,11 +216,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public List<User> getUserByTag(List<String> tagNmaeList) {
+
         // 1.校验
         if (CollectionUtils.isEmpty(tagNmaeList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "标签不能为空");
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // sql过滤
         // 拼接and查询
         // like %tag1% and like %tag2% and like %tag3%
         for (String tagName : tagNmaeList) {
@@ -224,6 +231,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         List<User> userList = userMapper.selectList(queryWrapper);
         // 每个用户都需要脱敏
         return userList.stream().map(this::getSafetUser).collect(Collectors.toList());
+        // 在内存中过滤
+//        queryWrapper = new QueryWrapper<>();
+//        List<User> userList = userMapper.selectList(queryWrapper);
+//        Gson gson = new Gson();
+//        return userList.stream().filter(user -> {
+//            String tagsJson = user.getTags();
+//            // 用户标签是否为空
+//            if (StringUtils.isBlank(tagsJson)) {
+//                return false;
+//            }
+//            Set<String> tagNameSet = gson.fromJson(tagsJson, new TypeToken<Set<String>>() {
+//            }.getType());
+//            for (String tagName : tagNmaeList) {
+//                if (!tagNameSet.contains(tagName)) {
+//                    return false; // 有一个标准不包含
+//                }
+//            }
+//            return true;
+//        }).map(this::getSafetUser).collect(Collectors.toList());
     }
 }
 
