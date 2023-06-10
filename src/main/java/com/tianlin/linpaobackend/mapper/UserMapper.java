@@ -1,7 +1,7 @@
 package com.tianlin.linpaobackend.mapper;
 
-import com.tianlin.linpaobackend.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tianlin.linpaobackend.model.domain.User;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

@@ -1,9 +1,9 @@
 package com.tianlin.linpaobackend.service.Tag.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tianlin.linpaobackend.mapper.TagMapper;
 import com.tianlin.linpaobackend.model.domain.Tag;
 import com.tianlin.linpaobackend.service.Tag.TagService;
-import com.tianlin.linpaobackend.mapper.TagMapper;
 import org.springframework.stereotype.Service;
 
 /**

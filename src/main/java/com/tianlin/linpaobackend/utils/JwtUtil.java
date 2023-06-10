@@ -1,12 +1,11 @@
 package com.tianlin.linpaobackend.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.tianlin.linpaobackend.model.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import com.alibaba.fastjson.JSON;
-
 
 import javax.crypto.SecretKey;
 import java.util.Date;

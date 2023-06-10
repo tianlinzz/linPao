@@ -1,9 +1,10 @@
 package com.tianlin.linpaobackend.service.User;
 
-import com.tianlin.linpaobackend.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tianlin.linpaobackend.model.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 天琳
@@ -46,4 +47,6 @@ public interface UserService extends IService<User> {
 
     // 校验用户信息是否合法
     User checkUserInfo(User userInfo);
+
+    List<User> getUserByTag(List<String> tagNmaeList);
 }

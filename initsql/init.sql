@@ -19,6 +19,9 @@ create table user
 )
     comment '用户表';
 
+-- 创建一列tags
+alter table user
+    add tags varchar(1024) null comment '用户标签列表';
 create table tag
 (
     id         bigint auto_increment comment '用户id'

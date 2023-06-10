@@ -1,7 +1,7 @@
 package com.tianlin.linpaobackend.service.Tag;
 
-import com.tianlin.linpaobackend.model.domain.Tag;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tianlin.linpaobackend.model.domain.Tag;
 
 /**
 * @author 张添琳

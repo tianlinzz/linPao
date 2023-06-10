@@ -11,12 +11,15 @@ import com.tianlin.linpaobackend.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -60,6 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setUpdateTime(originUser.getUpdateTime());
         safetyUser.setUserRole(originUser.getUserRole());
         safetyUser.setUserCode(originUser.getUserCode());
+        safetyUser.setTags(originUser.getTags());
         return safetyUser;
     }
 
@@ -200,6 +204,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return userInfo;
     }
 
+    /**
+     * 根据用户标签查询用户信息
+     * @param tagNmaeList
+     * @return
+     */
+    @Override
+    public List<User> getUserByTag(List<String> tagNmaeList) {
+        // 1.校验
+        if (CollectionUtils.isEmpty(tagNmaeList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "标签不能为空");
+        }
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // 拼接and查询
+        // like %tag1% and like %tag2% and like %tag3%
+        for (String tagName : tagNmaeList) {
+            queryWrapper = queryWrapper.like("tags", tagName);
+        }
+        List<User> userList = userMapper.selectList(queryWrapper);
+        // 每个用户都需要脱敏
+        return userList.stream().map(this::getSafetUser).collect(Collectors.toList());
+    }
 }
 
 
