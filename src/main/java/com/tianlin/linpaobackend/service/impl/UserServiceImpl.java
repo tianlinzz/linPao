@@ -2,6 +2,8 @@ package com.tianlin.linpaobackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
@@ -16,7 +18,10 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -206,21 +211,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     /**
      * 根据用户标签查询用户信息
-     * @param tagNmaeList
+     * @param tagNameList
      * @return
      */
     @Override
-    public List<User> getUserByTag(List<String> tagNmaeList) {
+    public List<User> getUserByTag(List<String> tagNameList) {
 
         // 1.校验
-        if (CollectionUtils.isEmpty(tagNmaeList)) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "标签不能为空");
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         // sql过滤
         // 拼接and查询
         // like %tag1% and like %tag2% and like %tag3%
-        for (String tagName : tagNmaeList) {
+        for (String tagName : tagNameList) {
             queryWrapper = queryWrapper.like("tags", tagName);
         }
         List<User> userList = userMapper.selectList(queryWrapper);
@@ -238,7 +243,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //            }
 //            Set<String> tagNameSet = gson.fromJson(tagsJson, new TypeToken<Set<String>>() {
 //            }.getType());
-//            for (String tagName : tagNmaeList) {
+//            tagNameSet = Optional.ofNullable(tagNameSet).orElse(new HashSet<>()); // 防止集合中的空指针
+//            for (String tagName : tagNameList) {
 //                if (!tagNameSet.contains(tagName)) {
 //                    return false; // 有一个标准不包含
 //                }

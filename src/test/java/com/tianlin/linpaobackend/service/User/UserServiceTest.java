@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -18,16 +19,8 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    void userRegister() {
-    }
-
-    @Test
-    void userLogin() {
-    }
-
-    @Test
     void getUserByTag() {
-        List<String> tagNmaeList = Arrays.asList("java", "python");
+        List<String> tagNmaeList = Collections.singletonList("java");
         List<User> userList = userService.getUserByTag(tagNmaeList);
         Assertions.assertNotNull(userList);
     }

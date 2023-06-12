@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  * 标签表
- * @TableName tag
+ * {@code @TableName} tag
  */
 @TableName(value ="tag")
 @Data
@@ -51,6 +51,7 @@ public class Tag implements Serializable {
 
     /**
      * 逻辑删除(0未删除 1删除)
+     * {@code @TableLogic} 逻辑删除注解
      */
     @TableLogic
     private Integer isDelete;

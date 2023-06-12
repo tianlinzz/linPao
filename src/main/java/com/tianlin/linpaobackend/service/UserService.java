@@ -48,5 +48,5 @@ public interface UserService extends IService<User> {
     // 校验用户信息是否合法
     User checkUserInfo(User userInfo);
 
-    List<User> getUserByTag(List<String> tagNmaeList);
+    List<User> getUserByTag(List<String> tagNameList);
 }
