@@ -10,9 +10,15 @@ declare module 'vue' {
     Layout: typeof import('./src/components/Layout/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VanCell: typeof import('vant/es')['Cell']
+    VanDivider: typeof import('vant/es')['Divider']
     VanIcon: typeof import('vant/es')['Icon']
     VanNavBar: typeof import('vant/es')['NavBar']
+    VanSearch: typeof import('vant/es')['Search']
+    VanTab: typeof import('vant/es')['Tab']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
+    VanTag: typeof import('vant/es')['Tag']
+    VanTreeSelect: typeof import('vant/es')['TreeSelect']
   }
 }

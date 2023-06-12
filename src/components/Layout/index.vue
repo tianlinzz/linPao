@@ -3,12 +3,18 @@ import {showToast} from 'vant';
 import {ref} from "vue";
 import {useTitleStore} from '../../stores/title'
 import {storeToRefs} from 'pinia'
+import {useRouter} from 'vue-router'
+
+const router = useRouter()
 
 const titleStore = useTitleStore()
 
 const {title} = storeToRefs(titleStore)
-const onClickLeft = () => history.back();
-const onClickRight = () => showToast('按钮');
+const onClickLeft = () => router.back();
+const onClickRight = () => {
+  router.push('/center/search')
+  active.value = ''
+};
 const active = ref<string>("home");
 const onChange = (index: number) => showToast(`进入${index}的页面`);
 </script>
