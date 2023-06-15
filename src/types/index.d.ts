@@ -11,7 +11,7 @@ export type UserInfo = {
     updateTime?: Date;
     userRole?: number;
     userCode?: number;
-    tag?: string [];
+    tags?: string;
 };
 
 export type Item = {
