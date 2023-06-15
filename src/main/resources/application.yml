@@ -1,5 +1,7 @@
 # 通用配置文件
 spring:
+  profiles: # 指定默认环境
+    active: dev
   application:
     name: lin-pao-backend
   datasource:
