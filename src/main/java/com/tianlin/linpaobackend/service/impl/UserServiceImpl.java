@@ -2,8 +2,6 @@ package com.tianlin.linpaobackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
@@ -73,7 +71,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword, String userCode) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword, Long userCode) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码不能为空");
@@ -85,8 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码长度必须在6-20位之间");
         }
         // 用户编码转化成整数只能大于零
-        int userCodeInt = Integer.parseInt(userCode);
-        if (userCodeInt < 0) {
+        if (userCode < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户编码必须大于零");
         }
         // 账号不能包含特殊字符,只能是字母数字下划线
@@ -94,12 +91,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         Matcher matcher = Pattern.compile(reg).matcher(userAccount);
         if (!matcher.find()) { // 如果包含特殊字符
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
-        }
-        // 用户编码是能是数字得组合
-        reg = "^[0-9]+$";
-        matcher = Pattern.compile(reg).matcher(userCode);
-        if (!matcher.find()) { // 如果包含不是数字的字符
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户编码只能是数字组合");
         }
         // 密码和校验密码相同
         if (!userPassword.equals(checkPassword)) {

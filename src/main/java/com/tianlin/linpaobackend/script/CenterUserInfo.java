@@ -14,7 +14,7 @@ public class CenterUserInfo {
      * 用户编号
      */
     @ExcelProperty("用户编号")
-    private String userCode;
+    private Long userCode;
 
     /**
      * 用户昵称

@@ -73,7 +73,7 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        String userCode = userRegisterRequest.getUserCode();
+        Long userCode = userRegisterRequest.getUserCode();
 
         if (userAccount == null || userPassword == null || checkPassword == null || userCode == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

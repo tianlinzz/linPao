@@ -24,4 +24,24 @@ class UserServiceTest {
         List<User> userList = userService.getUserByTag(tagNmaeList);
         Assertions.assertNotNull(userList);
     }
+
+    @Test
+    void getSafetUser() {
+    }
+
+    @Test
+    void userRegister() {
+    }
+
+    @Test
+    void userLogin() {
+    }
+
+    @Test
+    void userLogout() {
+    }
+
+    @Test
+    void checkUserInfo() {
+    }
 }

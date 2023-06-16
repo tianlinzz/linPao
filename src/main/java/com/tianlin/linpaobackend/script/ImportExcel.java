@@ -26,7 +26,7 @@ public class ImportExcel {
      * 3. 直接读即可
      */
     public static void main(String[] args) {
-        String fileName = "D:\\LearnSpace\\linPao\\server\\src\\main\\resources\\static\\userTest.xlsx";
+        String fileName = "D:\\LearnSpace\\linPao\\server\\src\\insertUsers\\resources\\static\\userTest.xlsx";
 //        readByListener(fileName);
         synchronousRead(fileName);
     }
