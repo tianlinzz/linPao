@@ -24,7 +24,6 @@ const value = ref<string | number>();
 const onSubmit = (values: UserInfo) => {
   console.log('submit', values);
 };
-
 </script>
 
 <template>
@@ -44,9 +43,7 @@ const onSubmit = (values: UserInfo) => {
       </van-button>
     </div>
   </van-form>
-
 </template>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>
