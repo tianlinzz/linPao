@@ -18,3 +18,10 @@ export type Item = {
     text: string;
     id: string;
 }
+
+export type ResponseData = {
+    code?: number;
+    data?: any;
+    description?: string;
+    msg?: string;
+}

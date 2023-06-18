@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue';
+import { useRouter } from 'vue-router'
 import {showToast} from 'vant';
 import type {Item} from '../../types'
 
+const router = useRouter();
 
 onMounted(() => {
     searchInput.value?.focus(); // 自动聚焦
@@ -39,39 +41,55 @@ const activeIdList = ref<string []>([]); // 选中的标签id列表
 const activeIndex = ref<number>(0);// 默认展开的标签索引
 const items = [
   {
-    text: '浙江',
+    text: '语言',
     children: [
-      { text: '杭州', id: '杭州' },
-      { text: '温州', id: '温州' },
-      { text: '宁波', id: '宁波' },
-      { text: '义乌', id: '义乌' },
+      { text: 'java', id: 'java' },
+      { text: 'python', id: 'python' },
+      { text: 'javascript', id: 'javascript' },
+      { text: 'c++', id: 'c++' },
     ],
   },
   {
-    text: '江苏',
+    text: '框架',
     children: [
-      { text: '南京', id: '南京' },
-      { text: '苏州', id: '苏州' },
-      { text: '常州', id: '常州' },
-      { text: '淮安', id: '淮安' },
-      { text: '扬州', id: '扬州' },
-      { text: '南通', id: '南通' },
-      { text: '镇江', id: '镇江' },
-      { text: '泰州', id: '泰州' },
-      { text: '无锡', id: '无锡' },
-      { text: '徐州', id: '徐州' },
-    ],
+      {
+        text: 'spring',
+        id: 'spring',
+      },
+      {
+        text: 'spring boot',
+        id: 'spring boot',
+      },
+      {
+        text: 'react',
+        id: 'react',
+      },
+      {
+        text: 'vue',
+        id: 'vue',
+      }
+    ]
   },
   {
-    text: '福建',
+    text: '状态',
     children: [
-      {text: '福州', id: '福州'},
-      {text: '厦门', id: '厦门'},
-      {text: '莆田', id: '莆田'},
-      {text: '三明', id: '三明'},
-      {text: '泉州', id: '泉州'},
-      {text: '漳州', id: '漳州'},
-    ],
+      {
+        text: '开心',
+        id: '开心',
+      },
+      {
+        text: 'emo',
+        id: 'emo',
+      },
+      {
+        text: '学习中',
+        id: '学习中',
+      },
+      {
+        text: '烦躁',
+        id: '烦躁',
+      },
+    ]
   }
 ];
 
@@ -82,18 +100,35 @@ const removeItem = (id: string) => {
   }
 }
 
+const goToResult = () => {
+  if (activeIdList.value.length === 0) {
+    showToast('请选择至少一个标签');
+    return;
+  }
+  router.push({
+    name: 'result',
+    query: {
+      tags: JSON.stringify(activeIdList.value)
+    }
+  })
+}
+
 
 </script>
 
 <template>
-  <van-search
-      :ref="(el) => (searchInput = el)"
-      v-model="searchValue"
-      show-action
-      placeholder="请输入搜索的标签"
-      @search="onSearch"
-      @cancel="onCancel"
-  />
+    <van-search
+        :ref="(el) => (searchInput = el)"
+        v-model="searchValue"
+        show-action
+        placeholder="请输入搜索的标签"
+        @search="onSearch"
+        @cancel="onCancel"
+    >
+      <template #action>
+        <van-button @click="goToResult" style="margin-bottom: 5px" type="primary" size="small">匹配伙伴</van-button>
+      </template>
+    </van-search>
   <div class="content">
     <van-divider
         :style="{ color: '#1989fa', borderColor: '#1989fa' }"
@@ -112,7 +147,6 @@ const removeItem = (id: string) => {
     <van-divider
         :style="{ color: '#1989fa', borderColor: '#1989fa' }"
     >全部标签</van-divider>
-
     <van-tree-select
         v-model:active-id="activeIdList"
         v-model:main-active-index="activeIndex"
