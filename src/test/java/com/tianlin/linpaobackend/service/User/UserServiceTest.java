@@ -20,7 +20,7 @@ class UserServiceTest {
 
     @Test
     void getUserByTag() {
-        List<String> tagNmaeList = Collections.singletonList("java");
+        List<String> tagNmaeList = Arrays.asList("java", "python");
         List<User> userList = userService.getUserByTag(tagNmaeList);
         Assertions.assertNotNull(userList);
     }

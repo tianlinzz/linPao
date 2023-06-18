@@ -66,12 +66,11 @@ public class HttpClientExample {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-
         // 创建HttpClient实例
         HttpClient httpClient = HttpClients.custom().build();
 
         // 创建HttpGet请求对象，并设置URL
-        HttpGet httpGet = new HttpGet(urlList[7]);
+        HttpGet httpGet = new HttpGet(urlList[0]);
 
         // 设置请求头
         httpGet.setHeader("User-Agent", "Mozilla/5.0");
@@ -120,12 +119,24 @@ public class HttpClientExample {
                     user.setGender(1);
                     user.setAvatarUrl(avatar_url);
                     user.setUserAccount(user_id.toString());
+                    // 随机 1开头 的11位手机号
+                    StringBuilder phone = new StringBuilder("1");
+                    for (int j = 0; j < 10; j++) {
+                        phone.append((int) (Math.random() * 10));
+                    }
+                    user.setPhone(String.valueOf(phone));
+                    // 随机1 开头的10位qq号
+                    StringBuilder qq = new StringBuilder("1");
+                    for (int j = 0; j < 9; j++) {
+                        qq.append((int) (Math.random() * 10));
+                    }
+                    user.setEmail(qq + "@qq.com");
                     user.setUserPassword("b07293a87bcbc77ac7e90543141d068c");
                     // 插入数据库
                     try {
                         if (finalConn != null) {
                             Statement sql = finalConn.createStatement();
-                            String sqlStr = "insert into user(userCode, username, tags, avatarUrl, userAccount, userPassword) values(" + user.getUserCode() + ", '" + user.getUsername() + "', '" + user.getTags() + "', '" + user.getAvatarUrl() + "', '" + user.getUserAccount() + "', '" + user.getUserPassword() + "')";
+                            String sqlStr = "insert into user(userCode, username, tags, avatarUrl, userAccount, userPassword, gender, phone, email) values(" + user.getUserCode() + ", '" + user.getUsername() + "', '" + user.getTags() + "', '" + user.getAvatarUrl() + "', '" + user.getUserAccount() + "', '" + user.getUserPassword() + "', '" + user.getGender() + "', '" + user.getPhone() + "', '" + user.getEmail() + "')";
                             sql.executeUpdate(sqlStr);
                         }
                     } catch (SQLException e) {

@@ -1,6 +1,8 @@
 package com.tianlin.linpaobackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tianlin.linpaobackend.common.BaseResponse;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
@@ -11,6 +13,7 @@ import com.tianlin.linpaobackend.model.domain.request.UserRegisterRequest;
 import com.tianlin.linpaobackend.service.UserService;
 import com.tianlin.linpaobackend.utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -129,7 +132,7 @@ public class UserController {
     }
 
     @PostMapping("/delete")
-    public BaseResponse<Boolean> userDelete(@RequestBody User body,HttpServletRequest request) {
+    public BaseResponse<Boolean> userDelete(@RequestBody User body, HttpServletRequest request) {
         // 鉴权
         if (isAdmin(getCurrentUser(request))) {
             throw new BusinessException(ErrorCode.NO_AUTH);
@@ -143,7 +146,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public BaseResponse<Boolean> userUpdate(@RequestBody User body,HttpServletRequest request) {
+    public BaseResponse<Boolean> userUpdate(@RequestBody User body, HttpServletRequest request) {
         // 鉴权
         if (isAdmin(getCurrentUser(request))) {
             throw new BusinessException(ErrorCode.NO_AUTH);
@@ -157,4 +160,18 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 获取用户信息列表
+     *
+     * @param tagNameList 标签名列表
+     * @return 用户信息列表
+     */
+    @GetMapping("/friendList")
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<User> result = userService.getUserByTag(tagNameList);
+        return ResultUtils.success(result);
+    }
 }
