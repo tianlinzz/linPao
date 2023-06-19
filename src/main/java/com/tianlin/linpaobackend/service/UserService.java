@@ -29,13 +29,22 @@ public interface UserService extends IService<User> {
     long userRegister(String userAccount, String userPassword, String checkPassword, Long userCode);
 
     /**
+     * 用户登录JWT
+     *
+     * @param userAccount  用户账号
+     * @param userPassword 用户密码
+     * @return 用户信息
+     */
+    String userLoginJWT(String userAccount, String userPassword);
+
+    /**
      * 用户登录
      *
      * @param userAccount  用户账号
      * @param userPassword 用户密码
      * @return 用户信息
      */
-    String userLogin(String userAccount, String userPassword);
+    User userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
     /**
      * 用户注销

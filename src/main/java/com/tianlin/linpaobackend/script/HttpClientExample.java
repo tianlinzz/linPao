@@ -2,7 +2,6 @@ package com.tianlin.linpaobackend.script;
 
 import com.google.gson.Gson;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.service.impl.UserServiceImpl;
 import lombok.Data;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,7 +12,6 @@ import org.apache.http.util.EntityUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;

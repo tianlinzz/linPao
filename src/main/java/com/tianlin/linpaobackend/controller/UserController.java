@@ -1,8 +1,6 @@
 package com.tianlin.linpaobackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.tianlin.linpaobackend.common.BaseResponse;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
@@ -85,7 +83,7 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/loginJWT")
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -95,7 +93,21 @@ public class UserController {
         if (userAccount == null || userPassword == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String result = userService.userLogin(userAccount, userPassword);
+        String result = userService.userLoginJWT(userAccount, userPassword);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/login")
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        if (userLoginRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String userAccount = userLoginRequest.getUserAccount();
+        String userPassword = userLoginRequest.getUserPassword();
+        if (userAccount == null || userPassword == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User result = userService.userLogin(userAccount, userPassword, request);
         return ResultUtils.success(result);
     }
 
@@ -167,7 +179,7 @@ public class UserController {
      * @return 用户信息列表
      */
     @GetMapping("/friendList")
-    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList) {
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(value = "tags",required = false) List<String> tagNameList) {
         if (CollectionUtils.isEmpty(tagNameList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

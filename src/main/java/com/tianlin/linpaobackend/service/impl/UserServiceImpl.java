@@ -16,13 +16,12 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
 
 
 /**
@@ -127,7 +126,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
     @Override
-    public String userLogin(String userAccount, String userPassword) {
+    public String userLoginJWT(String userAccount, String userPassword) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码不能为空");
@@ -160,6 +159,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String token = JwtUtil.getToke(user);
         // 5.返回用户信息
         return "Bearer " + token;
+    }
+
+    @Override
+    public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+        // 1.校验
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码不能为空");
+        }
+        if (userAccount.length() < 4 || userAccount.length() > 16) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号长度必须在4-16位之间");
+        }
+        if (userPassword.length() < 6 || userPassword.length() > 20) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码长度必须在6-20位之间");
+        }
+        // 账号不能包含特殊字符,只能是字母数字下划线
+        String reg = "^[a-zA-Z0-9_]+$";
+        Matcher matcher = Pattern.compile(reg).matcher(userAccount);
+        if (!matcher.find()) { // 如果包含特殊字符
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
+        }
+        // 2.加密
+        String newPassword = md5Password + userPassword + md5Password;
+        String password = DigestUtils.md5DigestAsHex(newPassword.getBytes());
+        // 3.查询数据
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("userPassword", password);
+        User user = userMapper.selectOne(queryWrapper);
+        // 用户不存在或密码错误
+        if (user == null) {
+            log.info("user longin fail, userAccount can not find or userPassword error");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码错误");
+        }
+        // 3.返回用户信息,不包含密码
+        User safetyUser = getSafetUser(user);
+        // 4.记录用户的登录状态
+        request.getSession().setAttribute(USER_LOGIN_STATUS, safetyUser);
+        User user1 = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        // 5.返回用户信息
+        return getSafetUser(user);
     }
 
     @Override
