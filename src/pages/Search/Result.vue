@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router'
-import { getFriendList } from '@/services/search'
+import {onMounted, ref} from 'vue';
+import {useRoute} from 'vue-router'
+import {getFriendList} from '@/services/search'
 import {UserInfo} from "@/types";
 import {AxiosResponse} from "axios";
-import {Toast} from "vant";
 
 
 const route = useRoute()
@@ -14,13 +13,9 @@ const friendList = ref<UserInfo[]>([])
 onMounted( () => {
   const { tags } = route.query;
   const tagNameList = JSON.parse(tags as string);
-  try {
-    getFriendList(tagNameList).then((res: AxiosResponse<UserInfo[]>) => {
-      friendList.value = res.data
-    })
-  }catch (e: any) {
-    Toast.fail(e.msg || '获取数据失败')
-  }
+  getFriendList(tagNameList).then((res: AxiosResponse<UserInfo[]>) => {
+    friendList.value = res.data
+  })
 });
 
 </script>

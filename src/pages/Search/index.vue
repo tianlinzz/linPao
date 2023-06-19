@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
-import { useRouter } from 'vue-router'
+import {onMounted, ref} from 'vue';
+import {useRouter} from 'vue-router'
 import {showToast} from 'vant';
 import type {Item} from '../../types'
 

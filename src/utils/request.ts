@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {ResponseData} from "@/types";
+import {showToast} from 'vant';
 
 // 创建Axios实例
 const instance: AxiosInstance = axios.create({
@@ -35,12 +36,15 @@ instance.interceptors.response.use(
         // 对响应数据做些什么
         const res = response.data as ResponseData;
         if (res.code === 200) {
+            showToast('请求成功');
             return response.data || []
         }
+        showToast(res.description || '请求失败');
         return Promise.reject(res.description || '请求失败');
     },
     (error: any) => {
         // 对响应错误做些什么
+        showToast(error.message || '请求失败');
         return Promise.reject(error);
     }
 );

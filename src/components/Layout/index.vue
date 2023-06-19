@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {showToast} from 'vant';
 import {ref} from "vue";
-import {useTitleStore} from '../../stores/title'
+import {useTitleStore} from '@/stores/title'
 import {storeToRefs} from 'pinia'
 import {useRouter} from 'vue-router'
 
@@ -32,6 +32,7 @@ const onChange = (index: number) => showToast(`进入${index}的页面`);
     </template>
   </van-nav-bar>
   <router-view/>
+  <div style="height: 50px;"></div>
   <van-tabbar v-model="active" @change="onChange">
     <van-tabbar-item icon="home-o" name="home" to="/center/home">主页</van-tabbar-item>
     <van-tabbar-item icon="friends-o" name="team" to="/center/team">队伍</van-tabbar-item>
