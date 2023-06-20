@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {useRoute} from 'vue-router'
-import {UserInfo} from "@/types";
+import {useRoute, useRouter} from 'vue-router'
+import { updateUserInfo } from "@/services/user";
+import { showToast } from 'vant'
+import {ResponseData} from "@/types";
 
+const router = useRouter()
 const route = useRoute()
 const {type, currentValue} = route.query
 
@@ -24,8 +27,31 @@ const typeMap = {
 }
 
 const value = ref<string | number>();
-const onSubmit = (values: UserInfo) => {
-  console.log('submit', values);
+const onSubmit = async () => {
+  if (type === 'tags') {
+    // 把字符串转换成数组
+    const tagStr: string = value.value as string
+    const tagArr: string[] = tagStr.split(',')
+    value.value = JSON.stringify(tagArr)
+  }
+  const payload = {
+    id: route.query.id,
+    type,
+    value: value.value,
+  }
+  const res: ResponseData =  await updateUserInfo(payload)
+  if (res.data) {
+    showToast({
+      message: '修改成功',
+      type: 'success'
+    })
+    router.back()
+    return;
+  }
+  showToast({
+    message: res?.description || res?.msg || '修改失败',
+    type: 'fail'
+  })
 };
 </script>
 

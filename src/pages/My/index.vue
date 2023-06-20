@@ -19,6 +19,7 @@ const goEdit = (type: string, currentValue: string | number) => {
   router.push({
     path: '/center/edit',
     query: {
+      id: userInfo.value.id,
       type,
       currentValue
     }
