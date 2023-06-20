@@ -138,66 +138,18 @@ public class UserController {
      */
     @PostMapping("/update")
     public BaseResponse<Boolean> userUpdate(@RequestBody User body,HttpServletRequest request) {
+        // 获取当前登录用户
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User currentUser = (User) userObj; // 强转
+        Long id = body.getId();
         // 鉴权
-        if (isAdmin(request)) {
+        if (isAdmin(request) || !currentUser.getId().equals(id)) { // 不是管理员或者不是本人
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
-        Long id = body.getId();
         if (id < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
         }
         User userInfo = userService.checkUserInfo(body);
-        boolean result = userService.updateById(userInfo);
-        return ResultUtils.success(result);
-    }
-
-    /**
-     * 更新自己的用户信息
-     *
-     * @param body    用户信息
-     * @param request 请求
-     * @return 是否更新成功
-     */
-    @PostMapping("/updateSelf")
-    public BaseResponse<Boolean> userUpdateSelf(@RequestBody UpdateSelf body, HttpServletRequest request) {
-        Long id = body.getId();
-        if (id < 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
-        }
-        // 获取登录用户
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
-        User loginUser = (User) userObj;
-        if (loginUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN);
-        }
-        if (!loginUser.getId().equals(id)) {
-            throw new BusinessException(ErrorCode.NO_AUTH);
-        }
-        // 通过id获取用户信息
-        User currentUser = userService.getById(id);
-        switch (body.getType()) {
-            case "username":
-                currentUser.setUsername(body.getValue());
-                break;
-            case "email":
-                currentUser.setEmail(body.getValue());
-                break;
-            case "phone":
-                currentUser.setPhone(body.getValue());
-                break;
-            case "avatarUrl":
-                currentUser.setAvatarUrl(body.getValue());
-                break;
-            case "gender":
-                currentUser.setGender(Integer.valueOf(body.getValue()));
-                break;
-            case "tags":
-                currentUser.setTags(body.getValue());
-                break;
-            default:
-                throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User userInfo = userService.checkUserInfo(currentUser);
         boolean result = userService.updateById(userInfo);
         return ResultUtils.success(result);
     }
