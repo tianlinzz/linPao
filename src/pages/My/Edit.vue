@@ -8,6 +8,9 @@ const {type, currentValue} = route.query
 
 
 onMounted(() => {
+  if (type === 'tags') {
+    value.value = JSON.stringify(currentValue)
+  }
   value.value = currentValue as (string | number)
 })
 

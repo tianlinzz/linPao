@@ -6,8 +6,6 @@ const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8080',
     timeout: 5000, // 设置请求超时时间
     withCredentials: true,
-    // @ts-ignore
-    crossDomain: true,
 });
 
 
@@ -16,8 +14,6 @@ const instance: AxiosInstance = axios.create({
 instance.interceptors.request.use(
     // @ts-ignore
     (config: AxiosRequestConfig) => {
-        // 获取cookie
-        console.log(document.cookie);
         return config;
     },
     (error: any) => {
