@@ -14,11 +14,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 //设置允许跨域请求的域名
                 //当**Credentials为true时，**Origin不能为星号，需为具体的ip地址【如果接口不带cookie,ip无需设成具体ip】
-                .allowedOrigins("http://127.0.0.1:5173","http://127.0.0.1:8080","http://114.132.229.206","http://localhost:8000","http://localhost:5173")
-                //是否允许证书 不再默认开启
+                .allowedOrigins("http://localhost:3000", "http://localhost:8000")
+                // 允许跨域带上cookies
                 .allowCredentials(true)
                 //设置允许的方法
                 .allowedMethods("*")
+                //跨域允许头部设置
+                .allowedHeaders("*")
                 //跨域允许时间
                 .maxAge(3600);
     }
