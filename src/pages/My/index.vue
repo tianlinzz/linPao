@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import {useRouter} from 'vue-router'
 import type {UserInfo} from '@/types'
-
+import { getCurrentUser } from '@/services/search'
 const router = useRouter()
+
+onMounted(() => {
+  getCurrentUser().then(res => {
+    console.log(res)
+  })
+})
 
 const userInfo: UserInfo = {
   id: 1,
