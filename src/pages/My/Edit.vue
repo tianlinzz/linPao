@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {useRoute, useRouter} from 'vue-router'
-import { updateUserInfo } from "@/services/user";
 import { showToast } from 'vant'
-import {ResponseData} from "@/types";
+import {useUserStore} from '@/stores/user'
+
+const userStore = useUserStore()
+const { updateUserInfo } = userStore
 
 const router = useRouter()
 const route = useRoute()
@@ -11,10 +13,7 @@ const {type, currentValue} = route.query
 
 
 onMounted(() => {
-  if (type === 'tags') {
-    value.value = JSON.stringify(currentValue)
-  }
-  value.value = currentValue as (string | number)
+  value.value = currentValue as (string | number | string[])
 })
 
 const typeMap = {
@@ -26,21 +25,10 @@ const typeMap = {
   'tags': '标签'
 }
 
-const value = ref<string | number>();
+const value = ref<string | number | string[]>();
 const onSubmit = async () => {
-  if (type === 'tags') {
-    // 把字符串转换成数组
-    const tagStr: string = value.value as string
-    const tagArr: string[] = tagStr.split(',')
-    value.value = JSON.stringify(tagArr)
-  }
-  const payload = {
-    id: route.query.id,
-    type,
-    value: value.value,
-  }
-  const res: ResponseData =  await updateUserInfo(payload)
-  if (res.data) {
+  const result = updateUserInfo(type, value.value);
+  if (result) {
     showToast({
       message: '修改成功',
       type: 'success'
@@ -49,7 +37,7 @@ const onSubmit = async () => {
     return;
   }
   showToast({
-    message: res?.description || res?.msg || '修改失败',
+    message: '修改失败',
     type: 'fail'
   })
 };
@@ -60,10 +48,9 @@ const onSubmit = async () => {
     <van-cell-group inset>
       <van-field
           v-model="value"
-          name="用户名"
           :label="typeMap[type]"
-          placeholder="用户名"
-          :rules="[{ required: true, message: '请填写用户名' }]"
+          placeholder="请输入修改的内容"
+          :rules="[{ required: true, message: '请输入修改的内容' }]"
       />
     </van-cell-group>
     <div style="margin: 16px;">

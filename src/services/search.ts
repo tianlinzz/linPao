@@ -6,11 +6,3 @@ export const getFriendList = (tagNameList: String[]) => {
         method: 'get',
     });
 }
-
-// 获取当前用户
-export const getCurrentUser = () => {
-    return request({
-        url: '/user/current',
-        method: 'get',
-    });
-}
