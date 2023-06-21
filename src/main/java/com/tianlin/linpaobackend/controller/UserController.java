@@ -166,6 +166,8 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         List<User> result = userService.getUserByTag(tagNameList);
+        // 去重
+        result = result.stream().distinct().collect(Collectors.toList());
         return ResultUtils.success(result);
     }
 
@@ -183,6 +185,8 @@ public class UserController {
         Collections.shuffle(result);
         // 获取前10个用户作为推荐结果
         List<User> recommendUsers = result.subList(0, Math.min(result.size(), 10));
+        // 去重
+        recommendUsers = recommendUsers.stream().distinct().collect(Collectors.toList());
         return ResultUtils.success(recommendUsers);
     }
 }
