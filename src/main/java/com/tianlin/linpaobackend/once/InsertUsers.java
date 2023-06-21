@@ -2,6 +2,7 @@ package com.tianlin.linpaobackend.once;
 
 import com.tianlin.linpaobackend.mapper.UserMapper;
 import com.tianlin.linpaobackend.model.domain.User;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -16,11 +17,12 @@ public class InsertUsers {
     /**
      * 批量插入用户
      */
+//    @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE) // 每隔 5s 执行一次, 但是只执行一次。fixedRate = Long.MAX_VALUE 表示执行一次
     public void batchInsertUsers() {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        // 插入用户的数量
-        int INSERT_USER_COUNT = 1000;
+
+        int INSERT_USER_COUNT = 1000;  //  插入用户的数量
         for (int i = 0; i < INSERT_USER_COUNT; i++) {
             User user = new User();
             user.setUsername("");
