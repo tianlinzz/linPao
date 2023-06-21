@@ -6,7 +6,6 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.model.domain.request.UpdateSelf;
 import com.tianlin.linpaobackend.model.domain.request.UserLoginRequest;
 import com.tianlin.linpaobackend.model.domain.request.UserRegisterRequest;
 import com.tianlin.linpaobackend.service.UserService;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,5 +167,22 @@ public class UserController {
         }
         List<User> result = userService.getUserByTag(tagNameList);
         return ResultUtils.success(result);
+    }
+
+    @GetMapping("/recommend")
+    public BaseResponse<List<User>> recommendUsers(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User currentUser = (User) userObj; // 强转
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        // 查询所有用户
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        List<User> result = userService.list(queryWrapper);
+        // 随机打乱用户列表
+        Collections.shuffle(result);
+        // 获取前10个用户作为推荐结果
+        List<User> recommendUsers = result.subList(0, Math.min(result.size(), 10));
+        return ResultUtils.success(recommendUsers);
     }
 }
