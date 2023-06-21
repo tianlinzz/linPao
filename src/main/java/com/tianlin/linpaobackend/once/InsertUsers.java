@@ -11,13 +11,18 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 
 @Component // 将该类交给 Spring 管理, 变成一个 Bean
 public class InsertUsers {
 
     @Resource
     private UserService userService;
+
+    /**
+     * 创建自定义线程池
+     */
+    private final ExecutorService executorService = new ThreadPoolExecutor(40, 1000, 10000, TimeUnit.MINUTES, new  ArrayBlockingQueue<>(10000));
 
     /**
      * 批量插入用户
@@ -85,7 +90,7 @@ public class InsertUsers {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 System.out.println("threadName: " + Thread.currentThread().getName());
                 userService.saveBatch(userList, BATCH_INSERT_COUNT); // 批量插入用户
-            });
+            }, executorService); // 使用自定义线程池
             futureList.add(future);
         }
 
