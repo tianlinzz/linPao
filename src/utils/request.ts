@@ -1,6 +1,9 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {ResponseData} from "@/types";
-import {showToast} from 'vant';
+import {showToast, showLoadingToast} from 'vant';
+
+
+let loadingToast: any = null;
 
 const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8080',
@@ -14,6 +17,12 @@ const instance: AxiosInstance = axios.create({
 instance.interceptors.request.use(
     // @ts-ignore
     (config: AxiosRequestConfig) => {
+        loadingToast = showLoadingToast({
+            message: '加载中...',
+            forbidClick: true,
+            duration: 0,
+            overlay: true,
+        })
         return config;
     },
     (error: any) => {
@@ -25,10 +34,9 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
     (response: AxiosResponse) => {
-        // 对响应数据做些什么
+        loadingToast.close();
         const res = response.data as ResponseData;
         if (res.code === 200) {
-            showToast('请求成功');
             return response.data || []
         }
         showToast(res.description || res.msg || '请求失败');

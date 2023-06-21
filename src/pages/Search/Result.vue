@@ -4,6 +4,8 @@ import {useRoute} from 'vue-router'
 import {getFriendList} from '@/services/search'
 import {UserInfo} from "@/types";
 import {AxiosResponse} from "axios";
+import { showToast } from "vant";
+import UserList from "../../components/UserCard/index.vue";
 
 
 const route = useRoute()
@@ -14,6 +16,7 @@ onMounted( () => {
   const { tags } = route.query;
   const tagNameList = JSON.parse(tags as string);
   getFriendList(tagNameList).then((res: AxiosResponse<UserInfo[]>) => {
+    showToast('匹配成功');
     friendList.value = res.data
   })
 });
@@ -21,25 +24,9 @@ onMounted( () => {
 </script>
 
 <template>
-  <template :key="friend.id" v-for="friend in friendList">
-    <van-card
-        :title="friend.username"
-        :thumb="friend.avatarUrl"
-    >
-      <template #tags>
-        <van-tag
-            v-for="tag in JSON.parse(friend.tags)"
-            :key="friend.id"
-            type="primary"
-            :style="{ margin: '4px' }"
-        >
-          {{tag}}
-        </van-tag>
-      </template>
-      <template #footer>
-        <van-button size="mini" type="primary">查看联系方式</van-button>
-      </template>
-    </van-card>
+  <van-empty v-if="friendList.length === 0" description="未匹配到相关的伙伴" />
+  <template v-else :key="friend.id" v-for="friend in friendList">
+    <UserList :user="friend" />
   </template>
 </template>
 

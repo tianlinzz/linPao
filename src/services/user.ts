@@ -17,3 +17,11 @@ export const updateUserInfo = (data: any) => {
         data,
     });
 }
+
+// 推荐用户
+export const getRecommendUser = () => {
+    return request({
+        url: '/user/recommend',
+        method: 'get',
+    });
+}

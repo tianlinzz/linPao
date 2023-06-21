@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {showToast} from 'vant';
 import {ref} from "vue";
 import {useTitleStore} from '@/stores/title'
 import {storeToRefs} from 'pinia'
@@ -9,14 +8,14 @@ const router = useRouter()
 
 const titleStore = useTitleStore()
 
-const {title} = storeToRefs(titleStore)
+const {title, activeTabbar, showTabbar} = storeToRefs(titleStore)
 const onClickLeft = () => router.back();
 const onClickRight = () => {
   router.push('/center/search')
-  active.value = ''
 };
-const active = ref<string>("home");
-const onChange = (index: number) => showToast(`进入${index}的页面`);
+
+const active = ref<string>(activeTabbar.value as string);
+
 </script>
 
 <template>
@@ -31,9 +30,10 @@ const onChange = (index: number) => showToast(`进入${index}的页面`);
       <van-icon name="search" size="18"/>
     </template>
   </van-nav-bar>
-  <router-view/>
-  <div style="height: 50px;"></div>
-  <van-tabbar v-model="active" @change="onChange">
+  <div class="content">
+    <router-view/>
+  </div>
+  <van-tabbar v-show="showTabbar" v-model="active">
     <van-tabbar-item icon="home-o" name="home" to="/center/home">主页</van-tabbar-item>
     <van-tabbar-item icon="friends-o" name="team" to="/center/team">队伍</van-tabbar-item>
     <van-tabbar-item icon="user-circle-o" name="my" to="/center/my">我的</van-tabbar-item>
@@ -41,5 +41,7 @@ const onChange = (index: number) => showToast(`进入${index}的页面`);
 </template>
 
 <style scoped>
-
+.content {
+  padding-bottom: 50px;
+}
 </style>

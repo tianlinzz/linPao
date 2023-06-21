@@ -32,14 +32,15 @@ const onSubmit = async () => {
     showToast({
       message: '修改成功',
       type: 'success'
-    })
-    router.back()
+    });
+    router.back();
     return;
   }
   showToast({
     message: '修改失败',
     type: 'fail'
-  })
+  });
+  return;
 };
 </script>
 
