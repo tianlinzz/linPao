@@ -19,9 +19,9 @@ export const updateUserInfo = (data: any) => {
 }
 
 // 推荐用户
-export const getRecommendUser = () => {
+export const getRecommendUser = (size: number = 10, page: number = 1) => {
     return request({
-        url: '/user/recommend',
+        url: `/user/recommend/${size}/${page}`,
         method: 'get',
     });
 }

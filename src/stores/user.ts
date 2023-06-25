@@ -15,10 +15,6 @@ export const useUserStore: StoreDefinition = defineStore('user', {
     actions: {
         async getUserInfo(): Promise<void> {
             const res = await getCurrentUser()
-            showToast({
-                message: '获取用户信息成功',
-                type: 'success'
-            })
             res.data.tags = JSON.parse(res.data.tags) // 序列化标签
             this.userInfo = res.data
         },
