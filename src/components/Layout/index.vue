@@ -30,7 +30,7 @@ const active = ref<string>(activeTabbar.value as string);
       <van-icon name="search" size="18"/>
     </template>
   </van-nav-bar>
-  <div class="content">
+  <div class="content" :class="{bottom: showTabbar}">
     <router-view/>
   </div>
   <van-tabbar v-show="showTabbar" v-model="active">
@@ -42,6 +42,10 @@ const active = ref<string>(activeTabbar.value as string);
 
 <style scoped>
 .content {
+  padding: 5px;
+  background-color: white;
+}
+.bottom {
   padding-bottom: 50px;
 }
 </style>
