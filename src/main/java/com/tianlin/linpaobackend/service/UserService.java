@@ -2,15 +2,16 @@ package com.tianlin.linpaobackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tianlin.linpaobackend.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.request.PageQuery;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
-* @author 天琳
-* @description 针对表【user(用户表)】的数据库操作Service
-* @createDate 2023-06-02 19:34:35
-*/
+ * @author 天琳
+ * @description 针对表【user(用户表)】的数据库操作Service
+ * @createDate 2023-06-02 19:34:35
+ */
 public interface UserService extends IService<User> {
 
     /**
@@ -49,4 +50,6 @@ public interface UserService extends IService<User> {
     User checkUserInfo(User userInfo);
 
     List<User> getUserByTag(List<String> tagNameList);
+
+    PageQuery<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize);
 }

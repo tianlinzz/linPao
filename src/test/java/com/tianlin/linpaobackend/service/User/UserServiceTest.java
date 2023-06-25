@@ -5,6 +5,9 @@ import com.tianlin.linpaobackend.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -16,6 +19,9 @@ class UserServiceTest {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Test
     void getUserByTag() {
@@ -42,5 +48,13 @@ class UserServiceTest {
 
     @Test
     void checkUserInfo() {
+    }
+
+    @Test
+    void testRedis() {
+        ValueOperations valueOperations = redisTemplate.opsForValue(); // 操作字符串
+        ListOperations listOperations = redisTemplate.opsForList(); // 操作列表
+        valueOperations.set("test", "test");
+        Assertions.assertEquals("test", valueOperations.get("test"));
     }
 }

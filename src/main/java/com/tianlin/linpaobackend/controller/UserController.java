@@ -6,16 +6,17 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.request.PageQuery;
 import com.tianlin.linpaobackend.model.domain.request.UserLoginRequest;
 import com.tianlin.linpaobackend.model.domain.request.UserRegisterRequest;
 import com.tianlin.linpaobackend.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
  */
 @RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
 
     @Resource
@@ -46,7 +48,12 @@ public class UserController {
         return user == null || user.getUserRole() != ADMIN_ROLE; // 不是管理员且未登录
     }
 
-
+    /**
+     * 用户注册
+     *
+     * @param userRegisterRequest 用户注册请求
+     * @return 用户id
+     */
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
@@ -64,6 +71,13 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginRequest 用户登录请求
+     * @param request          请求
+     * @return 用户信息
+     */
     @PostMapping("/login")
     public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
@@ -78,6 +92,12 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 用户登出
+     *
+     * @param request 请求
+     * @return 1为成功
+     */
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
@@ -87,6 +107,12 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 获取当前用户信息
+     *
+     * @param request 请求
+     * @return 当前用户信息
+     */
     @GetMapping("/current")
     public BaseResponse<User> userCurrent(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
@@ -100,6 +126,12 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 获取用户列表
+     *
+     * @param request   请求
+     * @return 用户列表
+     */
     @GetMapping("/list")
     public BaseResponse<List<User>> userList(String username, HttpServletRequest request) {
         // 鉴权
@@ -115,6 +147,12 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 删除用户
+     * @param body 用户信息
+     *             id 用户id
+     * @param request 请求
+     */
     @PostMapping("/delete")
     public BaseResponse<Boolean> userDelete(@RequestBody User body,HttpServletRequest request) {
         // 鉴权
@@ -171,22 +209,20 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
-    @GetMapping("/recommend")
-    public BaseResponse<List<User>> recommendUsers(HttpServletRequest request) {
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
-        User currentUser = (User) userObj; // 强转
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN);
-        }
-        // 查询所有用户
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        List<User> result = userService.list(queryWrapper);
-        // 随机打乱用户列表
-        Collections.shuffle(result);
-        // 获取前10个用户作为推荐结果
-        List<User> recommendUsers = result.subList(0, Math.min(result.size(), 10));
-        // 去重
-        recommendUsers = recommendUsers.stream().distinct().collect(Collectors.toList());
-        return ResultUtils.success(recommendUsers);
+    /**
+     * 获取推荐用户列表
+     *
+     * @param request  请求
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @return 用户信息列表
+     */
+    @GetMapping("/recommend/{size}/{num}")
+    public BaseResponse<PageQuery<User>> recommendUsers(
+            HttpServletRequest request,
+            @PathVariable(value = "size") long pageSize,
+            @PathVariable(value = "num") long pageNum) {
+        PageQuery<User> result = userService.getUserByPage(request, pageNum, pageSize);
+        return ResultUtils.success(result);
     }
 }

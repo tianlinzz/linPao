@@ -1,14 +1,18 @@
 package com.tianlin.linpaobackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
 import com.tianlin.linpaobackend.model.domain.User;
+import com.tianlin.linpaobackend.model.domain.request.PageQuery;
 import com.tianlin.linpaobackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -16,6 +20,7 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,6 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * md5加密密码
@@ -241,6 +249,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //            }
 //            return true;
 //        }).map(this::getSafetUser).collect(Collectors.toList());
+    }
+
+    @Override
+    public PageQuery<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize) {
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User currentUser = (User) userObj; // 强转
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        String redisKey = String.format("linpao:user:recommend:%s", currentUser.getId());
+        // 如果有缓存，先读取缓存
+        Page<User> userPage = (Page<User>) valueOperations.get(redisKey);
+        if (userPage != null) {
+            return new PageQuery<>(userPage.getTotal(), userPage.getRecords());
+        }
+        // 如果没有缓存，才从数据库中读取并缓存
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        userPage = this.page(new Page<>(pageNum, pageSize), queryWrapper);
+        try {
+            // 设置缓存，过期时间为一天
+            valueOperations.set(redisKey, userPage, 1, TimeUnit.DAYS);
+        }catch (Exception e) {
+            log.error("redis set key error:{}", e.getMessage());
+        }
+        return new PageQuery<>(userPage.getTotal(), userPage.getRecords());
     }
 }
 
