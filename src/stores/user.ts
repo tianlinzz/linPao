@@ -1,8 +1,8 @@
-import {defineStore} from 'pinia'
-import type { StoreDefinition } from 'pinia'
+import {defineStore} from 'pinia';
+import type { StoreDefinition } from 'pinia';
 import {UserInfo} from "@/types";
 import {updateUserInfo, getCurrentUser} from "@/services/user";
-import { showToast } from 'vant'
+import { showToast } from 'vant';
 
 interface State {
     userInfo: UserInfo
