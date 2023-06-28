@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.tianlin.linpaobackend.constant.UserConstant.REDIS_USER_PREFIX;
 import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
 
 
@@ -259,7 +260,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        String redisKey = String.format("linpao:user:recommend:%s", currentUser.getId());
+        String redisKey = String.format("%s:recommend:%s", REDIS_USER_PREFIX , currentUser.getId());
         // 如果有缓存，先读取缓存
         Page<User> userPage = (Page<User>) valueOperations.get(redisKey);
         if (userPage != null) {

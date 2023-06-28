@@ -20,4 +20,6 @@ public interface UserConstant {
      * 超时时间
      */
     int TIME_OUT = 60 * 60 * 24 * 7; // 7天
+
+    String REDIS_USER_PREFIX = "linpao:user";
 }
