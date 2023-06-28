@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("com.tianlin.linpaobackend.mapper")
+@MapperScan("com.tianlin.linpaobackend.mapper")// 扫描 Mapper, 生成 Mapper 对象 传入的字符串要和 Mapper 的包的路径一致
 public class MybatisPlusConfig {
 
     /**

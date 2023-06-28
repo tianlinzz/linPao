@@ -2,7 +2,7 @@ package com.tianlin.linpaobackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.model.domain.request.PageQuery;
+import com.tianlin.linpaobackend.model.request.PageRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -51,5 +51,5 @@ public interface UserService extends IService<User> {
 
     List<User> getUserByTag(List<String> tagNameList);
 
-    PageQuery<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize);
+    PageRequest<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize);
 }

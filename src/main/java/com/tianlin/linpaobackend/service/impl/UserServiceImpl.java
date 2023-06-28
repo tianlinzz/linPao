@@ -7,7 +7,7 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.mapper.UserMapper;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.model.domain.request.PageQuery;
+import com.tianlin.linpaobackend.model.request.PageRequest;
 import com.tianlin.linpaobackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -253,7 +253,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public PageQuery<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize) {
+    public PageRequest<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize) {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
         User currentUser = (User) userObj; // 强转
@@ -264,7 +264,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 如果有缓存，先读取缓存
         Page<User> userPage = (Page<User>) valueOperations.get(redisKey);
         if (userPage != null) {
-            return new PageQuery<>(userPage.getTotal(), userPage.getRecords());
+            return new PageRequest<>(userPage.getTotal(), userPage.getRecords());
         }
         // 如果没有缓存，才从数据库中读取并缓存
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -275,7 +275,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }catch (Exception e) {
             log.error("redis set key error:{}", e.getMessage());
         }
-        return new PageQuery<>(userPage.getTotal(), userPage.getRecords());
+        return new PageRequest<>(userPage.getTotal(), userPage.getRecords());
     }
 }
 
