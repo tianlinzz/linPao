@@ -2,6 +2,7 @@ package com.tianlin.linpaobackend.service;
 
 import com.tianlin.linpaobackend.model.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tianlin.linpaobackend.model.domain.User;
 
 /**
 * @author 张添琳
@@ -10,4 +11,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TeamService extends IService<Team> {
 
+    /**
+     * @param team 队伍信息
+     * @param loginUser 当前登录用户
+     */
+   long createTeam(Team team, User loginUser);
 }

@@ -8,8 +8,10 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.Team;
+import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.PageRequest;
+import com.tianlin.linpaobackend.model.request.TeamAddRequest;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +19,11 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
 
 @RestController
 @RequestMapping("/team")
@@ -32,15 +37,19 @@ public class TeamController {
     private UserService userService;
 
     @PostMapping("/add")
-    public BaseResponse<Long> addTeam(@RequestBody Team team) {
-        if (team == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        boolean result = teamService.save(team);
-        if (!result) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "添加队伍失败");
+        Team team = new Team();
+        try {
+            BeanUtils.copyProperties(team, teamAddRequest);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
-        return ResultUtils.success(team.getId());
+        long result = teamService.createTeam(team, loginUser);
+        return ResultUtils.success(result);
     }
 
     @PostMapping("/delete")
@@ -96,7 +105,7 @@ public class TeamController {
         return ResultUtils.success(result);
     }
 
-    @GetMapping("/list/page/{size}/{num}")
+    @GetMapping("/list/page")
     public BaseResponse<PageRequest> listTeamByPage(TeamQuery teamQuery) {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

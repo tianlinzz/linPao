@@ -6,7 +6,7 @@ spring:
     name: lin-pao-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tianlin
+    url: jdbc:mysql://localhost:3306/tianlin?serverTimezone=Asia/Shanghai
     username: root
     password: root
   session:
