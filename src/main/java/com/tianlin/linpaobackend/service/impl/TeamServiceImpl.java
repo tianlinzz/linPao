@@ -247,6 +247,16 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+        // 只有加密的队伍才可以修改密码,如果是公开和私有的队伍，密码需要设置为空
+        if (team.getStatus().equals(TeamStatus.SELECT.getCode())) {
+            String password = TeamUpdateRequest.getPassword();
+            if (StringUtils.isBlank(password)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍密码不能为空");
+            }
+            team.setPassword(password);
+        } else {
+            team.setPassword(null);
+        }
         return this.updateById(team);
     }
 }
