@@ -10,6 +10,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.enums.TeamStatus;
+import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.model.vo.UserVO;
 import com.tianlin.linpaobackend.service.TeamService;
@@ -223,6 +224,30 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             teamUserVOList.add(teamUserVO);
         }
         return teamUserVOList;
+    }
+
+    @Override
+    public boolean updateTeam(TeamUpdateRequest TeamUpdateRequest, boolean idAdmin, long loginUserId) {
+        Long id = TeamUpdateRequest.getId();
+        if (id == null || id < 1) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 查询队伍是否存在
+        Team team = this.getById(id);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
+        }
+        // 只有队长或者管理员才可以修改队伍信息
+        if (!idAdmin && !team.getUserId().equals(loginUserId)) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        // 修改队伍信息
+        try {
+            BeanUtils.copyProperties(team, TeamUpdateRequest); // 将前端传递的参数拷贝到team对象中
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return this.updateById(team);
     }
 }
 

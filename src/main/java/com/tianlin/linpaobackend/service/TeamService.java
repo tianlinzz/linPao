@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tianlin.linpaobackend.model.domain.Team;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
+import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 
 import java.util.List;
@@ -26,4 +27,7 @@ public interface TeamService extends IService<Team> {
      * @return 返回队伍列表
      */
    List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean idAdmin);
+
+   boolean updateTeam(TeamUpdateRequest TeamUpdateRequest, boolean isAdmin, long loginUserId);
+
 }

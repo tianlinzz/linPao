@@ -12,6 +12,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.PageRequest;
 import com.tianlin.linpaobackend.model.request.TeamAddRequest;
+import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
@@ -80,19 +81,23 @@ public class TeamController {
     }
 
     /**
-     * @param team 队伍信息
+     * @param teamUpdateRequest 队伍修改的信息
+     * @param request 请求
      * @return 返回更新结果
      */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTeam(@RequestBody Team team) {
-        if (team == null) {
+    public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateRequest teamUpdateRequest, HttpServletRequest request) {
+        if (teamUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.updateById(team);
-        if (!result) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新队伍失败");
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        return ResultUtils.success(true);
+        boolean isAdmin = userService.isAdmin(request);
+        long loginUserId = loginUser.getId();
+        boolean result = teamService.updateTeam(teamUpdateRequest, isAdmin, loginUserId);
+        return ResultUtils.success(result);
     }
 
     /**
