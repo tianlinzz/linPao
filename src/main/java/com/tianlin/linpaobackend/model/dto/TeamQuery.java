@@ -1,12 +1,7 @@
 package com.tianlin.linpaobackend.model.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -15,6 +10,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TeamQuery extends PageQuery {
+
+    private static final long serialVersionUID = 2093993638587721622L;
     /**
      * 队伍id
      */
@@ -39,4 +36,14 @@ public class TeamQuery extends PageQuery {
      * 最大人数，默认为5
      */
     private Integer maxNum;
+
+    /**
+     * 队伍状态 0公开 1私密但是无密码 2加密
+     */
+    private Integer status;
+
+    /**
+     * 搜索关键词
+     */
+    private String keyword;
 }

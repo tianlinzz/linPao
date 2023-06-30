@@ -2,8 +2,12 @@ package com.tianlin.linpaobackend.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class UserVO {
+public class UserVO implements Serializable {
+
+    private static final long serialVersionUID = -1229099936689106734L;
     /**
      * 用户id
      */

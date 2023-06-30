@@ -12,6 +12,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.PageRequest;
 import com.tianlin.linpaobackend.model.request.TeamAddRequest;
+import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,11 @@ import java.util.List;
 
 import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
 
+
+/**
+ * 队伍相关接口
+ * @author 张添琳
+ */
 @RestController
 @RequestMapping("/team")
 @Slf4j
@@ -36,6 +42,10 @@ public class TeamController {
     @Resource
     private UserService userService;
 
+    /**
+     * @param teamAddRequest 队伍信息
+     * @return 返回创建的队伍id
+     */
     @PostMapping("/add")
     public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
         User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
@@ -52,6 +62,11 @@ public class TeamController {
         return ResultUtils.success(result);
     }
 
+
+    /**
+     * @param id 队伍id
+     * @return 返回删除结果
+     */
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteTeam(@RequestBody long id) {
         if (id <= 0) {
@@ -64,6 +79,10 @@ public class TeamController {
         return ResultUtils.success(true);
     }
 
+    /**
+     * @param team 队伍信息
+     * @return 返回更新结果
+     */
     @PostMapping("/update")
     public BaseResponse<Boolean> updateTeam(@RequestBody Team team) {
         if (team == null) {
@@ -76,6 +95,10 @@ public class TeamController {
         return ResultUtils.success(true);
     }
 
+    /**
+     * @param id 队伍id
+     * @return 返回队伍信息
+     */
     @GetMapping("/get")
     public BaseResponse<Team> getTeam(@RequestParam long id) {
         if (id <= 0) {
@@ -88,23 +111,22 @@ public class TeamController {
         return ResultUtils.success(team);
     }
 
+    /**
+     * @param teamQuery 队伍查询条件
+     * @return 返回队伍列表
+     */
     @GetMapping("list")
-    public BaseResponse<List<Team>> listTeam(TeamQuery teamQuery) {
-        if (teamQuery == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Team team = new Team();
-        try {
-            BeanUtils.copyProperties(team, teamQuery);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
-        }
-
-        QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
-        List<Team> result = teamService.list(queryWrapper);
+    public BaseResponse<List<TeamUserVO>> listTeam(TeamQuery teamQuery, HttpServletRequest request) {
+        boolean isAdmin = userService.isAdmin(request);
+        List<TeamUserVO> result = teamService.getTeamList(teamQuery, isAdmin);
         return ResultUtils.success(result);
     }
 
+    /**
+     * 分页查询队伍
+     * @param teamQuery 队伍查询条件
+     * @return 返回队伍列表
+     */
     @GetMapping("/list/page")
     public BaseResponse<PageRequest> listTeamByPage(TeamQuery teamQuery) {
         if (teamQuery == null) {

@@ -1,9 +1,9 @@
 package com.tianlin.linpaobackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tianlin.linpaobackend.mapper.UserTeamMapper;
 import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.tianlin.linpaobackend.service.UserTeamService;
-import com.tianlin.linpaobackend.mapper.UserTeamMapper;
 import org.springframework.stereotype.Service;
 
 /**

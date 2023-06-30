@@ -25,8 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.tianlin.linpaobackend.constant.UserConstant.REDIS_USER_PREFIX;
-import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
+import static com.tianlin.linpaobackend.constant.UserConstant.*;
 
 
 /**
@@ -49,6 +48,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * md5加密密码
      */
     private static final String md5Password = "tianlin";
+
+
+    /**
+     * 判断是否为管理员
+     *
+     * @param request 请求
+     * @return 是否为管理员
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User user = (User) userObj;
+        return user == null || user.getUserRole() != ADMIN_ROLE; // 不是管理员且未登录
+    }
 
     /**
      * @description 获取安全用户信息,不包含密码

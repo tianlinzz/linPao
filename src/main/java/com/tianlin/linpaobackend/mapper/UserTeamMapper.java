@@ -1,7 +1,7 @@
 package com.tianlin.linpaobackend.mapper;
 
-import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tianlin.linpaobackend.model.domain.UserTeam;
 
 /**
 * @author 张添琳

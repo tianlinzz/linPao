@@ -1,7 +1,7 @@
 package com.tianlin.linpaobackend.service;
 
-import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tianlin.linpaobackend.model.domain.UserTeam;
 
 /**
 * @author 张添琳

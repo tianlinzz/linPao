@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tianlin.linpaobackend.constant.UserConstant.ADMIN_ROLE;
 import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
 
 
@@ -36,17 +35,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    /**
-     * 判断是否为管理员
-     *
-     * @param request 请求
-     * @return 是否为管理员
-     */
-    private boolean isAdmin(HttpServletRequest request) {
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
-        User user = (User) userObj;
-        return user == null || user.getUserRole() != ADMIN_ROLE; // 不是管理员且未登录
-    }
+
 
     /**
      * 用户注册
@@ -135,7 +124,7 @@ public class UserController {
     @GetMapping("/list")
     public BaseResponse<List<User>> userList(String username, HttpServletRequest request) {
         // 鉴权
-        if (isAdmin(request)) {
+        if (userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -156,7 +145,7 @@ public class UserController {
     @PostMapping("/delete")
     public BaseResponse<Boolean> userDelete(@RequestBody User body,HttpServletRequest request) {
         // 鉴权
-        if (isAdmin(request)) {
+        if (userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         Long id = body.getId();
@@ -181,7 +170,7 @@ public class UserController {
         User currentUser = (User) userObj; // 强转
         Long id = body.getId();
         // 鉴权
-        if (isAdmin(request) || !currentUser.getId().equals(id)) { // 不是管理员或者不是本人
+        if (userService.isAdmin(request) || !currentUser.getId().equals(id)) { // 不是管理员或者不是本人
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         if (id < 0) {

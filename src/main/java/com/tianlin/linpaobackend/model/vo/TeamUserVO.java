@@ -2,11 +2,14 @@ package com.tianlin.linpaobackend.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class TeamUserVO {
+public class TeamUserVO implements Serializable {
+
+    private static final long serialVersionUID = -7134929730104131983L;
     /**
      * 队伍id
      */
@@ -43,7 +46,11 @@ public class TeamUserVO {
     private Integer status;
 
     /**
-     * 加入的用户列表
+     * 创建队伍的用户
+     */
+    private UserVO createUser;
+    /**
+     * 队伍成员
      */
     private List<UserVO> userList;
 }

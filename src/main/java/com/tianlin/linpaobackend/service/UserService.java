@@ -52,4 +52,12 @@ public interface UserService extends IService<User> {
     List<User> getUserByTag(List<String> tagNameList);
 
     PageRequest<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize);
+
+    /**
+     * 判断是否为管理员
+     *
+     * @param request 请求
+     * @return 是否为管理员
+     */
+    boolean isAdmin(HttpServletRequest request);
 }

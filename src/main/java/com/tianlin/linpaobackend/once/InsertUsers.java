@@ -1,15 +1,12 @@
 package com.tianlin.linpaobackend.once;
 
-import com.tianlin.linpaobackend.mapper.UserMapper;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.service.UserService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
