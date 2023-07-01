@@ -63,13 +63,13 @@ public class TeamController {
 
 
     /**
-     * @param id 队伍id
+     * @param teamDissolveRequest 队伍解散的信息
      * @return 返回删除结果
      */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteTeam(@RequestBody long id, HttpServletRequest request) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @PostMapping("/dissolve")
+    public BaseResponse<Boolean> dissolveTeam(@RequestBody TeamDissolveRequest teamDissolveRequest, HttpServletRequest request) {
+        if (teamDissolveRequest == null) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
         if (loginUser == null) {
@@ -77,7 +77,7 @@ public class TeamController {
         }
         boolean isAdmin = userService.isAdmin(request);
         long loginUserId = loginUser.getId();
-        boolean result = teamService.deleteTeam(id, isAdmin, loginUserId);
+        boolean result = teamService.dissolveTeam(teamDissolveRequest, isAdmin, loginUserId);
         return ResultUtils.success(result);
     }
 

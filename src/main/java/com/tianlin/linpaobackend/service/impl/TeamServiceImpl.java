@@ -10,6 +10,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.enums.TeamStatus;
+import com.tianlin.linpaobackend.model.request.TeamDissolveRequest;
 import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
@@ -33,9 +34,9 @@ import java.util.Optional;
 
 /**
 * @author 张添琳
-* @description 针对表【team(队伍表)】的数据库操作Service实现
-* @createDate 2023-06-28 14:29:09
-*/
+* {@code @description} 针对表【team(队伍表)】的数据库操作Service实现
+* {@code @createDate} 2023-06-28 14:29:09
+ */
 @Service
 public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     implements TeamService{
@@ -270,14 +271,20 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     /**
      * 删除队伍
-     * @param teamId 队伍id
-     * @param isAdmin 是否是管理员
-     * @param loginUserId 当前登录用户id
+     *
+     * @param teamDissolveRequest 队伍解散的信息
+     * @param isAdmin             是否是管理员
+     * @param loginUserId         当前登录用户id
      * @return 是否删除成功
      */
     @Override
-    public boolean deleteTeam(long teamId, boolean isAdmin, long loginUserId) {
+    @Transactional(rollbackFor = Exception.class) // 事务回滚
+    public boolean dissolveTeam(TeamDissolveRequest teamDissolveRequest, boolean isAdmin, long loginUserId) {
         // 查询队伍是否存在
+        long teamId = teamDissolveRequest.getTeamId();
+        if (teamId < 1) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         Team team = this.getById(teamId);
         if (team == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
@@ -286,8 +293,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if (!isAdmin && !team.getUserId().equals(loginUserId)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
-        // 删除队伍
-        return this.removeById(teamId);
+        // 删除队伍和队伍成员关联表
+        QueryWrapper userTeamQueryWrapper = new QueryWrapper();
+        userTeamQueryWrapper.eq("teamId", teamId);
+        boolean removeResult = userTeamService.remove(userTeamQueryWrapper);
+        boolean deleteResult = this.removeById(teamId);
+        return removeResult && deleteResult;
     }
 
     /**

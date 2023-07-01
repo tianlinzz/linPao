@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tianlin.linpaobackend.model.domain.Team;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
+import com.tianlin.linpaobackend.model.request.TeamDissolveRequest;
 import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
@@ -13,8 +14,8 @@ import java.util.List;
 
 /**
  * @author 张添琳
- * @description 针对表【team(队伍表)】的数据库操作Service
- * @createDate 2023-06-28 14:29:09
+ * {@code @description} 针对表【team(队伍表)】的数据库操作Service
+ * {@code @createDate} 2023-06-28 14:29:09
  */
 public interface TeamService extends IService<Team> {
 
@@ -39,12 +40,12 @@ public interface TeamService extends IService<Team> {
     boolean updateTeam(TeamUpdateRequest TeamUpdateRequest, boolean isAdmin, long loginUserId);
 
     /**
-     * @param teamId      队伍id
-     * @param isAdmin     是否是管理员
-     * @param loginUserId 当前登录用户id
+     * @param teamDissolveRequest 队伍解散的信息
+     * @param isAdmin             是否是管理员
+     * @param loginUserId         当前登录用户id
      * @return 返回是否删除成功
      */
-    boolean deleteTeam(long teamId, boolean isAdmin, long loginUserId);
+    boolean dissolveTeam(TeamDissolveRequest teamDissolveRequest, boolean isAdmin, long loginUserId);
 
     /**
      * @param teamJoinRequest 队伍加入请求
