@@ -10,7 +10,7 @@ interface State {
 export const useTitleStore: StoreDefinition = defineStore('title', {
     state: (): State => ({
         title: '',
-        activeTabbar: '',
+        activeTabbar: 'home',
         showTabbar: true
     }),
     actions: {

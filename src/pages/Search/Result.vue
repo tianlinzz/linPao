@@ -5,7 +5,7 @@ import {getFriendList} from '@/services/search'
 import {UserInfo} from "@/types";
 import {AxiosResponse} from "axios";
 import { showToast } from "vant";
-import UserList from "../../components/UserCard/index.vue";
+import UserCard from "@/components/UserCard/index.vue";
 
 
 const route = useRoute()
@@ -26,7 +26,7 @@ onMounted( () => {
 <template>
   <van-empty v-if="friendList.length === 0" description="未匹配到相关的伙伴" />
   <template v-else :key="friend.id" v-for="friend in friendList">
-    <UserList :user="friend" />
+    <UserCard :user="friend" />
   </template>
 </template>
 

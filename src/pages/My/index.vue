@@ -39,6 +39,7 @@ const tagList = computed<string[]>(() => {
 </script>
 
 <template>
+  <template v-if="userInfo.id">
     <van-cell title="昵称" @click="goEdit('username', userInfo.username)" is-link to="/center/edit"
               :value="userInfo.username" center/>
     <van-cell title="账号" :value="userInfo.userAccount" center/>
@@ -59,6 +60,8 @@ const tagList = computed<string[]>(() => {
       </template>
     </van-cell>
     <van-cell title="注册时间" :value="dayjs(userInfo.createTime).format('YYYY-MM-DD HH:mm:ss')" center/>
+  </template>
+  <van-empty v-else description="用户未登录" />
 </template>
 
 <style scoped>
