@@ -10,6 +10,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.enums.TeamStatus;
+import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.model.vo.UserVO;
@@ -258,6 +259,86 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             team.setPassword(null);
         }
         return this.updateById(team);
+    }
+
+    @Override
+    public boolean deleteTeam(long teamId, boolean isAdmin, long loginUserId) {
+        // 查询队伍是否存在
+        Team team = this.getById(teamId);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
+        }
+        // 只有队长或者管理员才可以删除队伍
+        if (!isAdmin && !team.getUserId().equals(loginUserId)) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        // 删除队伍
+        return this.removeById(teamId);
+    }
+
+    @Override
+    public boolean joinTeam(TeamJoinRequest teamJoinRequest, long loginUserId) {
+        long teamId = teamJoinRequest.getTeamId();
+        if (teamId < 1) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 查询队伍是否存在
+        Team team = this.getById(teamId);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
+        }
+        // 不能加入自己创建的队伍
+        // todo 队长退出队伍后，可以加入自己创建的队伍，这里可以在队长退出队伍的时候，将队伍的队长id顺延给第一个加入的人。
+        if (team.getUserId().equals(loginUserId)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "不能加入自己创建的队伍");
+        }
+        // 查询队伍是否过期
+        Date expireTime = team.getExpireTime();
+        if (expireTime != null && expireTime.before(new Date())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍已过期");
+        }
+        // 禁止加入私密的队伍
+        if (team.getStatus().equals(TeamStatus.PRIVATE.getCode())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "私密队伍禁止加入");
+        }
+        // 如果是加密的队伍，需要校验密码
+        if (team.getStatus().equals(TeamStatus.SELECT.getCode())) {
+            String password = teamJoinRequest.getPassword();
+            if (StringUtils.isBlank(password)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍密码不能为空");
+            }
+            if (!password.equals(team.getPassword())) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍密码错误");
+            }
+        }
+        // 查询用户是否已经加入队伍
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("userId", loginUserId);
+        userTeamQueryWrapper.eq("teamId", teamId);
+        UserTeam userTeam = userTeamService.getOne(userTeamQueryWrapper);
+        if (userTeam != null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户已经加入队伍");
+        }
+        // 查询用户加入的队伍数量
+        userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("userId", loginUserId);
+        long hasJoinNum = userTeamService.count(userTeamQueryWrapper);
+        if (hasJoinNum > 5) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "每个用户最多只能加入5个队伍");
+        }
+        // 查询队伍已经加入的人数
+        userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("teamId", teamId);
+        long teamJoinNum = userTeamService.count(userTeamQueryWrapper);
+        if (teamJoinNum >= team.getMaxNum()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍人数已满");
+        }
+        // 加入队伍
+        UserTeam newUserTeam = new UserTeam();
+        newUserTeam.setTeamId(teamId);
+        newUserTeam.setUserId(loginUserId);
+        newUserTeam.setJoinTime(new Date());
+        return userTeamService.save(newUserTeam);
     }
 }
 

@@ -12,6 +12,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.PageRequest;
 import com.tianlin.linpaobackend.model.request.TeamAddRequest;
+import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
@@ -47,8 +48,8 @@ public class TeamController {
      * @param teamAddRequest 队伍信息
      * @return 返回创建的队伍id
      */
-    @PostMapping("/add")
-    public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
+    @PostMapping("/create")
+    public BaseResponse<Long> createTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
         User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
@@ -69,15 +70,18 @@ public class TeamController {
      * @return 返回删除结果
      */
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteTeam(@RequestBody long id) {
+    public BaseResponse<Boolean> deleteTeam(@RequestBody long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.removeById(id);
-        if (!result) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除队伍失败");
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        return ResultUtils.success(true);
+        boolean isAdmin = userService.isAdmin(request);
+        long loginUserId = loginUser.getId();
+        boolean result = teamService.deleteTeam(id, isAdmin, loginUserId);
+        return ResultUtils.success(result);
     }
 
     /**
@@ -147,5 +151,24 @@ public class TeamController {
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
         Page<Team> result = teamService.page(page, queryWrapper);
         return ResultUtils.success(new PageRequest(result.getTotal(), result.getRecords()));
+    }
+
+    /**
+     * @param teamJoinRequest 队伍加入信息
+     * @param request 请求
+     * @return 返回加入结果
+     */
+    @PostMapping("/join")
+    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinRequest teamJoinRequest, HttpServletRequest request) {
+        if (teamJoinRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        Long loginUserId = loginUser.getId();
+        boolean result = teamService.joinTeam(teamJoinRequest, loginUserId);
+        return ResultUtils.success(result);
     }
 }
