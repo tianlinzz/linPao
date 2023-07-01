@@ -5,6 +5,7 @@ import com.tianlin.linpaobackend.model.domain.Team;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
+import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 
@@ -51,4 +52,11 @@ public interface TeamService extends IService<Team> {
      * @return 返回是否加入成功
      */
     boolean joinTeam(TeamJoinRequest teamJoinRequest, long loginUserId);
+
+    /**
+     * @param teamQuitRequest 队伍退出请求
+     * @param loginUserId 当前登录用户id
+     * @return 返回是否退出成功
+     */
+    boolean quitTeam(TeamQuitRequest teamQuitRequest, long loginUserId);
 }

@@ -10,10 +10,7 @@ import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.Team;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
-import com.tianlin.linpaobackend.model.request.PageRequest;
-import com.tianlin.linpaobackend.model.request.TeamAddRequest;
-import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
-import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
+import com.tianlin.linpaobackend.model.request.*;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
@@ -169,6 +166,25 @@ public class TeamController {
         }
         Long loginUserId = loginUser.getId();
         boolean result = teamService.joinTeam(teamJoinRequest, loginUserId);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * @param teamQuitRequest 队伍id
+     * @param request 请求
+     * @return 返回退出结果
+     */
+    @PostMapping("/quit")
+    public BaseResponse<Boolean> quitTeam(@RequestBody TeamQuitRequest teamQuitRequest, HttpServletRequest request) {
+        if (teamQuitRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        Long loginUserId = loginUser.getId();
+        boolean result = teamService.quitTeam(teamQuitRequest, loginUserId);
         return ResultUtils.success(result);
     }
 }

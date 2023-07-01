@@ -11,6 +11,7 @@ import com.tianlin.linpaobackend.model.domain.UserTeam;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.enums.TeamStatus;
 import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
+import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.model.vo.UserVO;
@@ -227,6 +228,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         return teamUserVOList;
     }
 
+    /**
+     * @param TeamUpdateRequest 队伍信息
+     * @param idAdmin           是否是管理员
+     * @param loginUserId       登录用户id
+     * @return 返回是否修改成功
+     */
     @Override
     public boolean updateTeam(TeamUpdateRequest TeamUpdateRequest, boolean idAdmin, long loginUserId) {
         Long id = TeamUpdateRequest.getId();
@@ -261,6 +268,13 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         return this.updateById(team);
     }
 
+    /**
+     * 删除队伍
+     * @param teamId 队伍id
+     * @param isAdmin 是否是管理员
+     * @param loginUserId 当前登录用户id
+     * @return 是否删除成功
+     */
     @Override
     public boolean deleteTeam(long teamId, boolean isAdmin, long loginUserId) {
         // 查询队伍是否存在
@@ -276,6 +290,13 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         return this.removeById(teamId);
     }
 
+    /**
+     * 加入队伍
+     * @param teamJoinRequest  加入队伍请求参数
+     * @param loginUserId 当前登录用户id
+     * @return 是否加入成功
+     */
+    // todo 需要加锁，防止并发，因为同一时间可能有多个人加入同一个队伍，或者同一个发出多次加入队伍请求，导致队伍人数超过限制
     @Override
     public boolean joinTeam(TeamJoinRequest teamJoinRequest, long loginUserId) {
         long teamId = teamJoinRequest.getTeamId();
@@ -287,8 +308,6 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if (team == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
         }
-        // 不能加入自己创建的队伍
-        // todo 队长退出队伍后，可以加入自己创建的队伍，这里可以在队长退出队伍的时候，将队伍的队长id顺延给第一个加入的人。
         if (team.getUserId().equals(loginUserId)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "不能加入自己创建的队伍");
         }
@@ -339,6 +358,74 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         newUserTeam.setUserId(loginUserId);
         newUserTeam.setJoinTime(new Date());
         return userTeamService.save(newUserTeam);
+    }
+
+    /**
+     * 退出队伍
+     * @param teamQuitRequest 退出队伍请求参数
+     * @param loginUserId 当前登录用户id
+     * @return 是否退出成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class) // 事务回滚
+    public boolean quitTeam(TeamQuitRequest teamQuitRequest, long loginUserId) {
+        long teamId = teamQuitRequest.getTeamId();
+        if (teamId < 1) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 查询队伍是否存在
+        Team team = this.getById(teamId);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
+        }
+        // 查询用户是否已经加入队伍
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("userId", loginUserId);
+        userTeamQueryWrapper.eq("teamId", teamId);
+        UserTeam userTeam = userTeamService.getOne(userTeamQueryWrapper);
+        if (userTeam == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户未加入队伍");
+        }
+        // 队伍存在并且用户已经加入队伍
+        // 1.如果队伍仅剩下队长一个人，队长退出队伍后，队伍自动解散
+        userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("teamId", teamId);
+        long teamJoinNum = userTeamService.count(userTeamQueryWrapper);
+        if (teamJoinNum == 1) {
+            // 删除队伍和删除队伍下的所有人
+            boolean quitResult = this.removeById(teamId);
+            userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("teamId", teamId);
+            boolean removeResult = userTeamService.remove(userTeamQueryWrapper);
+            return quitResult && removeResult;
+        }
+
+        // 2. 如果是队长退出队伍，需要将队伍的队长id顺延给第一个加入的人。并且退出队伍。
+        if (team.getUserId().equals(loginUserId)) {
+            // 查询队伍下的所有人
+            userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("teamId", teamId);
+            userTeamQueryWrapper.last("order by id asc limit 2");
+            List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
+            if (CollectionUtils.isEmpty(userTeamList) || userTeamList.size() <= 1) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            }
+            // 将队伍的队长id顺延给第一个加入的人
+            UserTeam firstUserTeam = userTeamList.get(1);
+            Team updateTeam = new Team();
+            updateTeam.setId(teamId);
+            updateTeam.setUserId(firstUserTeam.getUserId());
+            boolean updateResult = this.updateById(updateTeam);
+            // 退出队伍
+            userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("userId", loginUserId);
+            userTeamQueryWrapper.eq("teamId", teamId);
+            boolean removeResult = userTeamService.remove(userTeamQueryWrapper);
+            return updateResult && removeResult;
+        }
+
+        // 3. 如果是队员退出队伍，直接删除队员
+        return userTeamService.removeById(userTeam.getId());
     }
 }
 
