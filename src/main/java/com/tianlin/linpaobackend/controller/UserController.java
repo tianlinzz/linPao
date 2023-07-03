@@ -6,7 +6,7 @@ import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
 import com.tianlin.linpaobackend.exception.BusinessException;
 import com.tianlin.linpaobackend.model.domain.User;
-import com.tianlin.linpaobackend.model.request.PageRequest;
+import com.tianlin.linpaobackend.model.response.PageResponse;
 import com.tianlin.linpaobackend.model.request.UserLoginRequest;
 import com.tianlin.linpaobackend.model.request.UserRegisterRequest;
 import com.tianlin.linpaobackend.service.UserService;
@@ -207,11 +207,11 @@ public class UserController {
      * @return 用户信息列表
      */
     @GetMapping("/recommend/{size}/{num}")
-    public BaseResponse<PageRequest<User>> recommendUsers(
+    public BaseResponse<PageResponse<User>> recommendUsers(
             HttpServletRequest request,
             @PathVariable(value = "size") long pageSize,
             @PathVariable(value = "num") long pageNum) {
-        PageRequest<User> result = userService.getUserByPage(request, pageNum, pageSize);
+        PageResponse<User> result = userService.getUserByPage(request, pageNum, pageSize);
         return ResultUtils.success(result);
     }
 }

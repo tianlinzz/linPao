@@ -1,8 +1,5 @@
 package com.tianlin.linpaobackend.controller;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tianlin.linpaobackend.common.BaseResponse;
 import com.tianlin.linpaobackend.common.ErrorCode;
 import com.tianlin.linpaobackend.common.ResultUtils;
@@ -11,6 +8,7 @@ import com.tianlin.linpaobackend.model.domain.Team;
 import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.*;
+import com.tianlin.linpaobackend.model.response.PageResponse;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
@@ -134,20 +132,17 @@ public class TeamController {
      * @return 返回队伍列表
      */
     @GetMapping("/list/page")
-    public BaseResponse<PageRequest> listTeamByPage(TeamQuery teamQuery) {
+    public BaseResponse<PageResponse> listTeamByPage(TeamQuery teamQuery, HttpServletRequest request) {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Team team = new Team();
-        try {
-            BeanUtils.copyProperties(team, teamQuery);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        Page<Team> page = new Page<>(teamQuery.getPageNum(), teamQuery.getPageSize());
-        QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
-        Page<Team> result = teamService.page(page, queryWrapper);
-        return ResultUtils.success(new PageRequest(result.getTotal(), result.getRecords()));
+        boolean isAdmin = userService.isAdmin(request);
+        PageResponse pageResponse = teamService.getTeamListByPage(teamQuery, isAdmin);
+        return ResultUtils.success(pageResponse);
     }
 
     /**

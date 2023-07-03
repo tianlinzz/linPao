@@ -8,6 +8,7 @@ import com.tianlin.linpaobackend.model.request.TeamDissolveRequest;
 import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
+import com.tianlin.linpaobackend.model.response.PageResponse;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 
 import java.util.List;
@@ -30,6 +31,14 @@ public interface TeamService extends IService<Team> {
      * @return 返回队伍列表
      */
     List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean idAdmin);
+
+    /**
+     * 分页查询队伍列表
+     *
+     * @param teamQuery 查询条件
+     * @return 返回队伍列表
+     */
+    PageResponse<TeamUserVO> getTeamListByPage(TeamQuery teamQuery, boolean isAdmin);
 
     /**
      * @param TeamUpdateRequest 队伍修改的信息
