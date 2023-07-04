@@ -121,6 +121,13 @@ public class TeamController {
      */
     @GetMapping("list")
     public BaseResponse<List<TeamUserVO>> listTeam(TeamQuery teamQuery, HttpServletRequest request) {
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
         boolean isAdmin = userService.isAdmin(request);
         List<TeamUserVO> result = teamService.getTeamList(teamQuery, isAdmin);
         return ResultUtils.success(result);
