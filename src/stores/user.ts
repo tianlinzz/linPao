@@ -32,5 +32,9 @@ export const useUserStore: StoreDefinition = defineStore('user', {
             const res = await updateUserInfo(this.userInfo)
             return res.data
         }
+    },
+    persist: {
+        storage: sessionStorage,
+        key: 'userInfo',
     }
 })

@@ -4,8 +4,10 @@ import 'vant/es/toast/style';
 import App from './App.vue'
 import router from './routes/index'
 import {createPinia} from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate' // 引入pinia的持久化插件
 
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
 app.use(router)
