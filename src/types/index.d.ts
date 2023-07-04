@@ -19,9 +19,9 @@ export type Item = {
     id: string;
 }
 
-export type ResponseData = {
+export type ResponseData<T> = {
     code?: number;
-    data?: any;
+    data?: T;
     description?: string;
     msg?: string;
 }
@@ -38,5 +38,27 @@ export type CreateTeam = {
     name: string,
     password: string,
     status: number
+}
+
+export type GetTeamList = {
+    id?: number,
+    description?: string,
+    keyword?: string,
+    maxNum?: number,
+    name?: string,
+    status?: number,
+    userId?: number
+}
+
+export type TeamInfo = {
+    id?: number,
+    name?: string,
+    description?: string,
+    maxNum?: number,
+    expireTime?: Date,
+    status?: number,
+    userId?: number,
+    createUser?: UserInfo,
+    userList?: UserInfo[],
 }
 

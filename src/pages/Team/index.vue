@@ -1,4 +1,19 @@
 <script setup lang="ts">
+import {ref, onMounted} from 'vue'
+import {getTeamList} from "@/services/team";
+import {GetTeamList, TeamInfo} from "@/types";
+
+const teamList = ref<TeamInfo[]>([])
+
+onMounted(() => {
+  getTeamListData()
+})
+
+const getTeamListData = async (params?: GetTeamList) => {
+  const res = await getTeamList(params)
+  console.log(res)
+  teamList.value = res.data as TeamInfo[]
+}
 
 </script>
 

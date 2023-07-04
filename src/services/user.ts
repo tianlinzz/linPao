@@ -1,9 +1,9 @@
 import request from '@/utils/request';
-import {ResponseData, UserLogin} from "@/types";
+import {ResponseData, UserInfo, UserLogin} from "@/types";
 
 
 // 登录
-export const login : (data: UserLogin) => Promise<ResponseData> = (data) => {
+export const login : (data: UserLogin) => Promise<ResponseData<UserInfo>> = (data) => {
     return request({
         url: '/user/login',
         method: 'post',
