@@ -30,3 +30,13 @@ export type UserLogin = {
     userAccount: string;
     userPassword: string;
 }
+
+export type CreateTeam = {
+    description: string,
+    expireTime: Date,
+    maxNum: number,
+    name: string,
+    password: string,
+    status: number
+}
+
