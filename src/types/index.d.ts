@@ -19,7 +19,7 @@ export type Item = {
     id: string;
 }
 
-export type ResponseData<T> = {
+export type ResponseData<T =any> = {
     code?: number;
     data?: T;
     description?: string;
