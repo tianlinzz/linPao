@@ -1,20 +1,14 @@
 <script setup lang="ts">
-import {onMounted, computed} from "vue";
+import {computed} from "vue";
 import {useRouter} from 'vue-router'
-import {storeToRefs} from 'pinia'
 import {useUserStore} from '@/stores/user'
 import dayjs from "dayjs";
 
 const userStore = useUserStore()
-
-const {getUserInfo} = userStore
-const {userInfo} = storeToRefs(userStore)
+const {userInfo} = userStore
 
 const router = useRouter()
 
-onMounted(() => {
-  getUserInfo()
-})
 
 const goEdit = (type: string, currentValue: string | number | string[]) => {
   router.push({

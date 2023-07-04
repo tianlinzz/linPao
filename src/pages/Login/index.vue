@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import {UserLogin} from "@/types";
 import { login } from "@/services/user";
 import { showToast } from "vant";
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore()
+const {getUserInfo} = userStore
 
 const router = useRouter()
-const route = useRoute()
 
 const userAccount = ref<string>('');
 const userPassword = ref<string>('');
@@ -14,6 +17,7 @@ const onSubmit = async (values: UserLogin) => {
   const res = await login(values)
   if (res.code === 200) {
     showToast('登录成功')
+    getUserInfo()
     window.location.href = '/'
   }
 };

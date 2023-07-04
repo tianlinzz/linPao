@@ -14,6 +14,9 @@ export const useUserStore: StoreDefinition = defineStore('user', {
     }),
     actions: {
         async getUserInfo(): Promise<void> {
+            if(this.userInfo?.id) {
+                return
+            }
             const res = await getCurrentUser()
             res.data.tags = JSON.parse(res.data.tags) // 序列化标签
             this.userInfo = res.data
@@ -34,7 +37,11 @@ export const useUserStore: StoreDefinition = defineStore('user', {
         }
     },
     persist: {
+        // If you want to persist only a subset of the store, you can specify it here:
+        paths: ['userInfo'],
+        // Or if you want to define a custom storage:
         storage: sessionStorage,
+        // Or if you want to define custom methods to handle the storage:
         key: 'userInfo',
     }
 })
