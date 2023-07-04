@@ -1,5 +1,15 @@
 import request from '@/utils/request';
+import {ResponseData, UserLogin} from "@/types";
 
+
+// 登录
+export const login : (data: UserLogin) => Promise<ResponseData> = (data) => {
+    return request({
+        url: '/user/login',
+        method: 'post',
+        data,
+    });
+}
 
 // 获取当前用户
 export const getCurrentUser = () => {

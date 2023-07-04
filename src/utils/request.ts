@@ -39,6 +39,12 @@ instance.interceptors.response.use(
         if (res.code === 200) {
             return response.data || []
         }
+        if (res.code === 40100) {
+            // 未登录
+            showToast('请先登录');
+            window.location.href = '/login';
+            return Promise.reject('请先登录');
+        }
         showToast(res.description || res.msg || '请求失败');
         return Promise.reject(res.description || res.msg || '请求失败');
     },

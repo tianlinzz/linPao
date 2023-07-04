@@ -25,3 +25,8 @@ export type ResponseData = {
     description?: string;
     msg?: string;
 }
+
+export type UserLogin = {
+    userAccount: string;
+    userPassword: string;
+}
