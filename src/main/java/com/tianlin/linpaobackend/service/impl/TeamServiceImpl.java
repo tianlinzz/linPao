@@ -78,6 +78,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 queryWrapper.like("description", description);
             }
             Integer status = teamQuery.getStatus();
+            if (status != null && status >= 0 && status <= 2) {
+                queryWrapper.eq("status", status);
+            }
             TeamStatus teamStatus = TeamStatus.getTeamStatus(status);
             if (teamStatus == null) {
                 teamStatus = TeamStatus.PUBLIC;
@@ -85,7 +88,6 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if (!isAdmin && !teamStatus.equals(TeamStatus.PUBLIC)) {
                 throw new BusinessException(ErrorCode.NO_AUTH);
             }
-            queryWrapper.eq("status", teamStatus.getCode());
             Integer maxNum = teamQuery.getMaxNum();
             if (maxNum != null && maxNum >= 1) {
                 queryWrapper.eq("maxNum", maxNum);
