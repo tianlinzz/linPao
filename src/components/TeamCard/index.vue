@@ -94,7 +94,7 @@ const quit = (teamId: number) => {
       </van-tag>
     </template>
     <template #footer>
-      <van-button @click="join(team.id, team.status)" v-if="team.userId !== userInfo.id" size="mini" type="primary">加入队伍</van-button>
+      <van-button @click="join(team.id, team.status)" v-if="team.userId !== userInfo.id && Number(team.status) !== 1" size="mini" type="primary">加入队伍</van-button>
       <van-button @click="update(team.id)" v-if="team.userId === userInfo.id" size="mini" type="primary">修改队伍
       </van-button>
       <van-button @click="quit(team.id)" v-if="team.userId !== userInfo.id && isExist" size="mini" type="danger">退出队伍
