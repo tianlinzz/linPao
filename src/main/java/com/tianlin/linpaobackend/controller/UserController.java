@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
+import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_PREFIX;
 
 
 /**
@@ -104,7 +104,7 @@ public class UserController {
      */
     @GetMapping("/current")
     public BaseResponse<User> userCurrent(HttpServletRequest request) {
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_PREFIX);
         User currentUser = (User) userObj; // 强转
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
@@ -166,7 +166,7 @@ public class UserController {
     @PostMapping("/update")
     public BaseResponse<Boolean> userUpdate(@RequestBody User body,HttpServletRequest request) {
         // 获取当前登录用户
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_PREFIX);
         User currentUser = (User) userObj; // 强转
         Long id = body.getId();
         // 鉴权

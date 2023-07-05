@@ -8,7 +8,7 @@ public interface UserConstant {
     /**
      * 用户登录状态
      */
-    String USER_LOGIN_STATUS = "userLoginStatus";
+    String USER_LOGIN_PREFIX = "linpao:user:login:status";
 
     /**
      * 用户角色状态

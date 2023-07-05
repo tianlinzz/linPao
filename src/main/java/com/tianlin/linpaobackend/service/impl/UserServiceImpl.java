@@ -58,7 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public boolean isAdmin(HttpServletRequest request) {
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_PREFIX);
         User user = (User) userObj;
         return user == null || user.getUserRole() != ADMIN_ROLE; // 不是管理员且未登录
     }
@@ -179,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 3.返回用户信息,不包含密码
         User safetyUser = getSafetUser(user);
         // 4.记录用户的登录状态
-        request.getSession().setAttribute(USER_LOGIN_STATUS, safetyUser);
+        request.getSession().setAttribute(USER_LOGIN_PREFIX, safetyUser);
         // 5.返回用户信息
         return getSafetUser(user);
     }
@@ -187,7 +187,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public int userLogout(HttpServletRequest request) {
         // 1.清除session中的用户登录状态
-        request.getSession().removeAttribute(USER_LOGIN_STATUS);
+        request.getSession().removeAttribute(USER_LOGIN_PREFIX);
         return 1;
     }
 
@@ -268,7 +268,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public PageResponse<User> getUserByPage(HttpServletRequest request, long pageNum, long pageSize) {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_PREFIX);
         User currentUser = (User) userObj; // 强转
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);

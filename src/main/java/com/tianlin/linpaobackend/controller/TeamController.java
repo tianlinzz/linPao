@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_STATUS;
+import static com.tianlin.linpaobackend.constant.UserConstant.USER_LOGIN_PREFIX;
 
 
 /**
@@ -45,7 +45,7 @@ public class TeamController {
      */
     @PostMapping("/create")
     public BaseResponse<Long> createTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -69,7 +69,7 @@ public class TeamController {
         if (teamDissolveRequest == null) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -89,7 +89,7 @@ public class TeamController {
         if (teamUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -124,7 +124,7 @@ public class TeamController {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -143,7 +143,7 @@ public class TeamController {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -162,7 +162,7 @@ public class TeamController {
         if (teamJoinRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
@@ -181,7 +181,7 @@ public class TeamController {
         if (teamQuitRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User loginUser = (User) request.getSession().getAttribute(USER_LOGIN_PREFIX);
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
