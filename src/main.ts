@@ -1,6 +1,9 @@
 import {createApp} from 'vue'
 import './style.css'
 import 'vant/es/toast/style';
+import 'vant/es/dialog/style';
+import 'vant/es/notify/style';
+import 'vant/es/image-preview/style';
 import App from './App.vue'
 import router from './routes/index'
 import {createPinia} from 'pinia'

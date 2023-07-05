@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 import {UserLogin} from "@/types";
-import { login } from "@/services/user";
-import { showToast } from "vant";
-import { useUserStore } from "@/stores/user";
+import {login} from "@/services/user";
+import {showToast} from "vant";
+import {useUserStore} from "@/stores/user";
 
 const userStore = useUserStore()
 const {getUserInfo} = userStore
@@ -16,9 +16,9 @@ const userPassword = ref<string>('');
 const onSubmit = async (values: UserLogin) => {
   const res = await login(values)
   if (res.code === 200) {
+    getUserInfo() // 获取用户信息
+    await router.replace('/')
     showToast('登录成功')
-    getUserInfo()
-    window.location.href = '/'
   }
 };
 </script>

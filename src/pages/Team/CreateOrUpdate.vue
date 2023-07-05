@@ -1,12 +1,30 @@
 <script setup lang="ts">
-import {ref} from 'vue'
-import { useRouter } from "vue-router";
-import { showToast } from "vant";
+import {ref, onMounted} from 'vue'
+import {useRouter, useRoute} from "vue-router";
+import {showToast} from "vant";
 import {CreateTeam} from "@/types";
 import dayjs from "dayjs";
-import {createTeam} from "@/services/team";
+import {createTeam, getTeamInfo, updateTeamInfo} from "@/services/team";
 
 const router = useRouter();
+const route = useRoute();
+const id = route.query.id
+
+onMounted(async () => {
+  if (id) {
+   const {data, code} = await getTeamInfo(Number(id))
+    if (code === 200) {
+      name.value = data?.name as string
+      maxNum.value = data?.maxNum as number
+      description.value = data?.description as string
+      status.value = String(data?.status)
+      expireTime.value = dayjs(data?.expireTime).format('YYYY-MM-DD HH:mm:ss')
+      if (Number(data?.status) === 2) {
+        password.value = data?.password as string
+      }
+    }
+  }
+})
 
 const name = ref<string>('')
 const maxNum = ref<number>(3)
@@ -32,11 +50,13 @@ const onSubmit = async (values: CreateTeam) => {
     status: Number(values.status),
     maxNum: Number(values.maxNum),
   };
-  console.log('submit', params);
-  const res = await createTeam(params);
+  if (id) {
+    params.id = Number(id)
+  }
+  const res = await (id ? updateTeamInfo(params) : createTeam(params));
   if (res.code === 200) {
     showToast({
-      message: '创建成功',
+      message: `${id ? '更新' : '创建'}队伍成功`,
       type: 'success',
     });
     await router.replace('/center/team');

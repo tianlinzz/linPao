@@ -32,11 +32,12 @@ export type UserLogin = {
 }
 
 export type CreateTeam = {
+    id?: number,
     description: string,
     expireTime: Date,
     maxNum: number,
     name: string,
-    password: string,
+    password?: string,
     status: number
 }
 
@@ -58,7 +59,13 @@ export type TeamInfo = {
     expireTime?: Date,
     status?: number,
     userId?: number,
+    password?: string,
     createUser?: UserInfo,
     userList?: UserInfo[],
+}
+
+export type JoinTeam = {
+    teamId: number,
+    password?: string
 }
 

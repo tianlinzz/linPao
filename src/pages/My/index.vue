@@ -9,7 +9,6 @@ const {userInfo} = userStore
 
 const router = useRouter()
 
-
 const goEdit = (type: string, currentValue: string | number | string[]) => {
   router.push({
     path: '/center/edit',
@@ -23,7 +22,7 @@ const goEdit = (type: string, currentValue: string | number | string[]) => {
 
 const tagList = computed<string[]>(() => {
   // 过滤重复的标签，或者空标签
-  return Array.from(new Set(userInfo.value.tags)).map((tag: any) => {
+  return Array.from(new Set(userInfo.tags)).map((tag: any) => {
     if (tag) {
       return tag
     }

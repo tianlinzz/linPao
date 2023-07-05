@@ -34,9 +34,9 @@ const index: RouteRecordRaw[] = [
                 meta: {title: '队伍', show: true}
             },
             {
-                path: 'create',
-                name: 'create',
-                component: () => import('../pages/Team/Create.vue'),
+                path: 'createOrUpdate',
+                name: 'createOrUpdate',
+                component: () => import('../pages/Team/CreateOrUpdate.vue'),
                 meta: {title: '创建队伍', show: false}
             },
             {

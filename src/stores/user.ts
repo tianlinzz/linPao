@@ -2,7 +2,6 @@ import {defineStore} from 'pinia';
 import type { StoreDefinition } from 'pinia';
 import {UserInfo} from "@/types";
 import {updateUserInfo, getCurrentUser} from "@/services/user";
-import { showToast } from 'vant';
 
 interface State {
     userInfo: UserInfo
@@ -14,8 +13,8 @@ export const useUserStore: StoreDefinition = defineStore('user', {
     }),
     actions: {
         async getUserInfo(): Promise<void> {
-            if(this.userInfo?.id) {
-                return
+            if (this.userInfo.id) {
+                return // 如果已经有用户信息了，就不再请求
             }
             const res = await getCurrentUser()
             res.data.tags = JSON.parse(res.data.tags) // 序列化标签
@@ -41,7 +40,7 @@ export const useUserStore: StoreDefinition = defineStore('user', {
         paths: ['userInfo'],
         // Or if you want to define a custom storage:
         storage: sessionStorage,
+        key: 'userInfo'
         // Or if you want to define custom methods to handle the storage:
-        key: 'userInfo',
     }
 })
