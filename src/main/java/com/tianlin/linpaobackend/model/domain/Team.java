@@ -52,6 +52,7 @@ public class Team implements Serializable {
     /**
      * 队伍密码
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED) // 更新时忽略空值,可以设置为null
     private String password;
 
     /**
