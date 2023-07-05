@@ -134,7 +134,7 @@ public class TeamController {
      * @return 返回队伍列表
      */
     @GetMapping("/list/page")
-    public BaseResponse<PageResponse> listTeamByPage(TeamQuery teamQuery, HttpServletRequest request) {
+    public BaseResponse<PageResponse<TeamUserVO>> listTeamByPage(TeamQuery teamQuery, HttpServletRequest request) {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -143,7 +143,7 @@ public class TeamController {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         boolean isAdmin = userService.isAdmin(request);
-        PageResponse pageResponse = teamService.getTeamListByPage(teamQuery, isAdmin);
+        PageResponse<TeamUserVO> pageResponse = teamService.getTeamListByPage(teamQuery, isAdmin);
         return ResultUtils.success(pageResponse);
     }
 
