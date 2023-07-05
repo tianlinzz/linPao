@@ -17,6 +17,7 @@ import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.response.PageResponse;
+import com.tianlin.linpaobackend.model.response.TeamInfoResponse;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.model.vo.UserVO;
 import com.tianlin.linpaobackend.service.TeamService;
@@ -131,7 +132,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 }
             }
             // 查询队伍成员，并且不包含队长
-            QueryWrapper userTeamQueryWrapper = new QueryWrapper();
+            QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
             userTeamQueryWrapper.eq("teamId", team.getId());
             userTeamQueryWrapper.ne("userId", userId);
             List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
@@ -240,6 +241,24 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         return team.getId();
     }
 
+    @Override
+    public TeamInfoResponse getTeamById(long teamId) {
+        if (teamId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Team team = this.getById(teamId);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "获取队伍失败");
+        }
+        TeamInfoResponse result = new TeamInfoResponse();
+        try {
+            BeanUtils.copyProperties(result, team);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        return result;
+    }
+
     /**
      * @param teamQuery 查询条件
      * @return 返回队伍列表
@@ -322,6 +341,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         } else {
             team.setPassword(null);
         }
+        // 替换队伍信息
         return this.updateById(team);
     }
 
@@ -350,7 +370,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         // 删除队伍和队伍成员关联表
-        QueryWrapper userTeamQueryWrapper = new QueryWrapper();
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
         userTeamQueryWrapper.eq("teamId", teamId);
         boolean removeResult = userTeamService.remove(userTeamQueryWrapper);
         boolean deleteResult = this.removeById(teamId);

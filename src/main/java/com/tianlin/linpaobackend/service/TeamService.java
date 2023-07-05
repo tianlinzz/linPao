@@ -9,6 +9,7 @@ import com.tianlin.linpaobackend.model.request.TeamJoinRequest;
 import com.tianlin.linpaobackend.model.request.TeamQuitRequest;
 import com.tianlin.linpaobackend.model.request.TeamUpdateRequest;
 import com.tianlin.linpaobackend.model.response.PageResponse;
+import com.tianlin.linpaobackend.model.response.TeamInfoResponse;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 
 import java.util.List;
@@ -25,6 +26,12 @@ public interface TeamService extends IService<Team> {
      * @param loginUser 当前登录用户
      */
     long createTeam(Team team, User loginUser);
+
+    /**
+     * @param teamId 队伍id
+     * @return 返回队伍信息
+     */
+    TeamInfoResponse getTeamById(long teamId);
 
     /**
      * @param teamQuery 查询条件

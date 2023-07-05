@@ -9,6 +9,7 @@ import com.tianlin.linpaobackend.model.domain.User;
 import com.tianlin.linpaobackend.model.dto.TeamQuery;
 import com.tianlin.linpaobackend.model.request.*;
 import com.tianlin.linpaobackend.model.response.PageResponse;
+import com.tianlin.linpaobackend.model.response.TeamInfoResponse;
 import com.tianlin.linpaobackend.model.vo.TeamUserVO;
 import com.tianlin.linpaobackend.service.TeamService;
 import com.tianlin.linpaobackend.service.UserService;
@@ -104,15 +105,9 @@ public class TeamController {
      * @return 返回队伍信息
      */
     @GetMapping("/get")
-    public BaseResponse<Team> getTeam(@RequestParam long id) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Team team = teamService.getById(id);
-        if (team == null) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "获取队伍失败");
-        }
-        return ResultUtils.success(team);
+    public BaseResponse<TeamInfoResponse> getTeam(@RequestParam long id) {
+        TeamInfoResponse result = teamService.getTeamById(id);
+        return ResultUtils.success(result);
     }
 
     /**
