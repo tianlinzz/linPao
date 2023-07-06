@@ -54,7 +54,7 @@ let joinTeam: JoinTeam = {
   teamId: 0,
   password: '',
 }
-const onConfirm = (joinTeam: JoinTeam) => {
+const onConfirm = () => {
   joinTeam.password = password.value
   emits('joinTeam', joinTeam)
 }
@@ -113,6 +113,7 @@ const quit = (teamId: number) => {
     <van-field
         v-model="password"
         name="password"
+        type="password"
         label="队伍密码"
         placeholder="请输入队伍密码"
     />
