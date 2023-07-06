@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
+import {useRoute} from "vue-router";
 import {dissolveTeam, getTeamList, joinTeamAPI, quitTeamAPI} from "@/services/team";
 import {GetTeamList, TeamInfo, JoinTeam} from "@/types";
 import TeamCard from "@/components/TeamCard/index.vue";
 import {showConfirmDialog, showToast} from "vant";
 
+const route = useRoute()
+const query = route.query
+
 const teamList = ref<TeamInfo[]>([])
 
 onMounted(() => {
-  getTeamListData()
+  const {isSearch, ...params} = query
+  query.isSearch ? getTeamListData(params) : getTeamListData()
 })
 
 const getTeamListData = async (params?: GetTeamList) => {
@@ -59,9 +64,18 @@ const quit = (teamId: number) => {
   })
 }
 
+const reset = () => {
+  window.location.href = '/center/team'
+  getTeamListData()
+}
+
 </script>
 
 <template>
+  <div class="search">
+    <van-button to="/center/teamSearch" type="primary" size="large">搜索队伍</van-button>
+    <van-button class="reset-button" @click="reset" size="large">重置</van-button>
+  </div>
   <van-button class="create-button" round to="/center/createOrUpdate" type="primary" size="large">创建队伍</van-button>
   <template v-if="teamList.length !== 0" v-for="team in teamList">
     <TeamCard @dissolveTeam="dissolve" @joinTeam="join" @quitTeam="quit" :team="team"/>
@@ -70,7 +84,15 @@ const quit = (teamId: number) => {
 </template>
 
 <style scoped>
-.create-button {
+.search {
+  display: flex;
+  justify-content: space-between;
   margin: 16px 0;
+}
+.reset-button {
+  margin-left: 10px;
+}
+.create-button {
+  margin-bottom: 16px;
 }
 </style>

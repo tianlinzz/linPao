@@ -46,6 +46,12 @@ const index: RouteRecordRaw[] = [
                 meta: {title: '搜索', show: false}
             },
             {
+                path: 'teamSearch',
+                name: 'teamSearch',
+                component: () => import('../pages/Search/TeamSearch.vue'),
+                meta: {title: '队伍搜索', show: false}
+            },
+            {
                 path: 'edit',
                 name: 'edit',
                 component: () => import('../pages/My/Edit.vue'),
