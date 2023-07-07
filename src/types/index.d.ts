@@ -49,7 +49,10 @@ export type GetTeamList = {
     name?: string,
     status?: number,
     userId?: number,
-    isOnlyJoin?: boolean
+    isOnlyCreate?: boolean,
+    isOnlyJoin?: boolean,
+    isOnlyNotJoin?: boolean,
+    statusList?: number[],
 }
 
 export type TeamInfo = {

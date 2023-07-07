@@ -72,11 +72,21 @@ const reset = () => {
 </script>
 
 <template>
+  <van-divider
+      :style="{ color: '#1989fa', borderColor: '#1989fa' }"
+  >
+    操作
+  </van-divider>
   <div class="search">
     <van-button to="/center/teamSearch" type="primary" size="large">搜索队伍</van-button>
     <van-button class="reset-button" @click="reset" size="large">重置</van-button>
   </div>
   <van-button class="create-button" round to="/center/createOrUpdate" type="primary" size="large">创建队伍</van-button>
+  <van-divider
+      :style="{ color: '#1989fa', borderColor: '#1989fa' }"
+  >
+    队伍列表
+  </van-divider>
   <template v-if="teamList.length !== 0" v-for="team in teamList">
     <TeamCard @dissolveTeam="dissolve" @joinTeam="join" @quitTeam="quit" :team="team"/>
   </template>
@@ -87,12 +97,9 @@ const reset = () => {
 .search {
   display: flex;
   justify-content: space-between;
-  margin: 16px 0;
+  margin-bottom: 16px;
 }
 .reset-button {
   margin-left: 10px;
-}
-.create-button {
-  margin-bottom: 16px;
 }
 </style>

@@ -2,53 +2,57 @@
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {GetTeamList} from "@/types";
-import {useUserStore} from "@/stores/user";
-
-const userStore = useUserStore()
-const {userInfo} = userStore
 
 const router = useRouter()
 
-const teamQuery = ref<GetTeamList>({})
-const isOnlyMe = ref<boolean>()
+const teamQuery = ref<GetTeamList>({
+  isOnlyJoin: false,
+  isOnlyCreate: false,
+  isOnlyNotJoin: false,
+  statusList: [0, 1, 2],
+})
 
 const goToResult = () => {
+  const query = {
+    ...teamQuery.value,
+    isSearch: 1,
+  }
   router.push({
     path: '/center/team',
     // @ts-ignore
-    query: isOnlyMe.value ? {
-      ...teamQuery.value,
-      userId: userInfo.id,
-      isSearch: 1,
-    } : {
-      ...teamQuery.value,
-      isSearch: 1,
-    }
+    query
   })
 }
 
 </script>
 
 <template>
-  <van-search v-model="teamQuery.keyword" placeholder="请输入搜索关键词" />
+  <van-search v-model="teamQuery.keyword" placeholder="请输入搜索关键词"/>
   <div class="radio">
     <span>队伍状态：</span>
-    <van-radio-group v-model="teamQuery.status" direction="horizontal">
-      <van-radio :name="0">公开</van-radio>
-      <van-radio :name="1">私人</van-radio>
-      <van-radio :name="2">加密</van-radio>
-    </van-radio-group>
+    <van-checkbox-group v-model="teamQuery.statusList" direction="horizontal">
+      <van-checkbox :name="0">公开</van-checkbox>
+      <van-checkbox :name="1">私密</van-checkbox>
+      <van-checkbox :name="2">加密</van-checkbox>
+    </van-checkbox-group>
   </div>
   <div class="radio">
-    <span>是否仅查看自己创建的队伍：</span>
-    <van-radio-group v-model="isOnlyMe" direction="horizontal">
+    <span>仅查看自己创建的队伍：</span>
+    <van-radio-group v-model="teamQuery.isOnlyCreate" direction="horizontal">
       <van-radio :name="true">是</van-radio>
       <van-radio :name="false">否</van-radio>
     </van-radio-group>
   </div>
   <div class="radio">
-    <span>是否仅查看自己加入的队伍：</span>
+    <span>仅查看自己加入的队伍：</span>
     <van-radio-group v-model="teamQuery.isOnlyJoin" direction="horizontal">
+      <van-radio :name="true">是</van-radio>
+      <van-radio :name="false">否</van-radio>
+    </van-radio-group>
+  </div>
+  <div class="radio">
+    <span>仅查看自己未加入的队伍：</span>
+    <van-radio-group v-model="teamQuery.isOnlyNotJoin" direction="horizontal">
       <van-radio :name="true">是</van-radio>
       <van-radio :name="false">否</van-radio>
     </van-radio-group>

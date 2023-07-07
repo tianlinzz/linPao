@@ -1,6 +1,8 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {ResponseData} from "@/types";
 import {showToast, showLoadingToast} from 'vant';
+// @ts-ignore
+import qs from 'qs';
 
 
 let loadingToast: any = null;
@@ -9,6 +11,9 @@ const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:8080',
     timeout: 5000, // 设置请求超时时间
     withCredentials: true,
+    paramsSerializer: function (params) {
+        return qs.stringify(params, {arrayFormat: 'repeat'})
+    }
 });
 
 
