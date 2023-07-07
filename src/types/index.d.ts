@@ -48,7 +48,8 @@ export type GetTeamList = {
     maxNum?: number,
     name?: string,
     status?: number,
-    userId?: number
+    userId?: number,
+    isOnlyJoin?: boolean
 }
 
 export type TeamInfo = {

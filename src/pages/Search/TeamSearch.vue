@@ -10,11 +10,12 @@ const {userInfo} = userStore
 const router = useRouter()
 
 const teamQuery = ref<GetTeamList>({})
-const isOnlyMe = ref<boolean>(false)
+const isOnlyMe = ref<boolean>()
 
 const goToResult = () => {
   router.push({
     path: '/center/team',
+    // @ts-ignore
     query: isOnlyMe.value ? {
       ...teamQuery.value,
       userId: userInfo.id,
@@ -41,6 +42,13 @@ const goToResult = () => {
   <div class="radio">
     <span>是否仅查看自己创建的队伍：</span>
     <van-radio-group v-model="isOnlyMe" direction="horizontal">
+      <van-radio :name="true">是</van-radio>
+      <van-radio :name="false">否</van-radio>
+    </van-radio-group>
+  </div>
+  <div class="radio">
+    <span>是否仅查看自己加入的队伍：</span>
+    <van-radio-group v-model="teamQuery.isOnlyJoin" direction="horizontal">
       <van-radio :name="true">是</van-radio>
       <van-radio :name="false">否</van-radio>
     </van-radio-group>

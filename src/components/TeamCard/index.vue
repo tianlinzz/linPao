@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps, defineEmits, ref} from "vue";
+import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user";
 import {JoinTeam, TeamInfo} from "@/types";
