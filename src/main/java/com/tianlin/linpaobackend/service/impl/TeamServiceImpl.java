@@ -62,6 +62,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
      */
     private QueryWrapper<Team> getQueryWrapper(TeamQuery teamQuery, boolean isAdmin, long loginUserId) {
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
         // 不展示已经过期的队伍或者没有设置过期时间的队伍 !IMPORTANT
         queryWrapper.and(wrapper -> wrapper.gt("expireTime", new Date()).or().isNull("expireTime"));
         // 1、根据条件查询队伍列表
@@ -101,10 +102,14 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if (StringUtils.isNotBlank(keyword) && keyword.length() > 0) {
                 queryWrapper.and(wrapper -> wrapper.like("name", keyword).or().like("description", keyword));
             }
+            // 是否只查询自己创建的队伍
+            Boolean isOnlyCreate= teamQuery.getIsOnlyCreate();
+            if (isOnlyCreate != null && isOnlyCreate) {
+                queryWrapper.eq("userId", loginUserId);
+            }
             // 是否只查询自己加入的队伍
-            Boolean isOnlySelf = teamQuery.getIsOnlyJoin();
-            QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
-            if (isOnlySelf != null && isOnlySelf) {
+            Boolean isOnlyJoin = teamQuery.getIsOnlyJoin();
+            if (isOnlyJoin != null && isOnlyJoin) {
                 userTeamQueryWrapper.eq("userId", loginUserId);
                 // 查询用户 => 队伍关系表
                 List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
@@ -114,6 +119,26 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                     // 查询队伍列表
                     queryWrapper.in("id", teamIdList);
                 }
+            }
+            // 是否只查询自己未加入的队伍
+            Boolean isOnlyNotJoin = teamQuery.getIsOnlyNotJoin();
+            if (isOnlyNotJoin != null && isOnlyNotJoin) {
+                userTeamQueryWrapper.eq("userId", loginUserId);
+                // 查询用户 => 队伍关系表
+                List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
+                if (CollectionUtils.isNotEmpty(userTeamList)) {
+                    // 获取队伍 id 列表
+                    List<Long> teamIdList = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toList());
+                    // 查询队伍列表
+                    // 排除自己创建的队伍
+                    queryWrapper.ne("userId", loginUserId);
+                    queryWrapper.notIn("id", teamIdList);
+                }
+            }
+            // 根据队伍状态列表查询
+            List<Integer> statusList = teamQuery.getStatusList();
+            if (CollectionUtils.isNotEmpty(statusList)) {
+                queryWrapper.in("status", statusList);
             }
         }
         return queryWrapper;

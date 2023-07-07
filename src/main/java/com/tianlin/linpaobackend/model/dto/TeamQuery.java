@@ -3,6 +3,8 @@ package com.tianlin.linpaobackend.model.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 
 /**
  * 队伍请求参数
@@ -53,7 +55,20 @@ public class TeamQuery extends PageQuery {
     private String password;
 
     /**
+     * 是否只查询创建的队伍
+     */
+    private Boolean isOnlyCreate;
+
+    /**
      * 是否只查询加入的队伍
      */
     private Boolean isOnlyJoin;
+    /**
+     * 是否只查询未加入的队伍
+     */
+    private Boolean isOnlyNotJoin;
+    /**
+     * 根据队伍状态列表查询
+     */
+    private List<Integer> statusList;
 }
