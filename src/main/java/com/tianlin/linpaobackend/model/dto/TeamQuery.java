@@ -51,4 +51,9 @@ public class TeamQuery extends PageQuery {
      * (队伍为加密状态)队伍密码
      */
     private String password;
+
+    /**
+     * 是否只查询加入的队伍
+     */
+    private Boolean isOnlyJoin;
 }

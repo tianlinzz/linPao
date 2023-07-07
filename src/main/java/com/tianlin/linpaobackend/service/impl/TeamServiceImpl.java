@@ -35,15 +35,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
-* @author 张添琳
-* {@code @description} 针对表【team(队伍表)】的数据库操作Service实现
-* {@code @createDate} 2023-06-28 14:29:09
+ * @author 张添琳
+ * {@code @description} 针对表【team(队伍表)】的数据库操作Service实现
+ * {@code @createDate} 2023-06-28 14:29:09
  */
 @Service
 public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
-    implements TeamService{
+        implements TeamService {
 
     @Resource
     private UserTeamService userTeamService;
@@ -54,19 +55,22 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     /**
      * 根据搜索条件构建查询条件
+     *
      * @param teamQuery 队伍信息
-     * @param isAdmin 是否为管理员
+     * @param isAdmin   是否为管理员
      * @return 查询条件
      */
-    private QueryWrapper<Team> getQueryWrapper(TeamQuery teamQuery, boolean isAdmin) {
+    private QueryWrapper<Team> getQueryWrapper(TeamQuery teamQuery, boolean isAdmin, long loginUserId) {
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+        // 不展示已经过期的队伍或者没有设置过期时间的队伍 !IMPORTANT
+        queryWrapper.and(wrapper -> wrapper.gt("expireTime", new Date()).or().isNull("expireTime"));
         // 1、根据条件查询队伍列表
         if (teamQuery != null) {
             Long id = teamQuery.getId();
             if (id != null && id >= 1) {
                 queryWrapper.eq("id", id);
             }
-            Long  userId = teamQuery.getUserId();
+            Long userId = teamQuery.getUserId();
             if (userId != null && userId >= 1) {
                 queryWrapper.eq("userId", userId);
             }
@@ -97,14 +101,27 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if (StringUtils.isNotBlank(keyword) && keyword.length() > 0) {
                 queryWrapper.and(wrapper -> wrapper.like("name", keyword).or().like("description", keyword));
             }
+            // 是否只查询自己加入的队伍
+            Boolean isOnlySelf = teamQuery.getIsOnlyJoin();
+            QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+            if (isOnlySelf != null && isOnlySelf) {
+                userTeamQueryWrapper.eq("userId", loginUserId);
+                // 查询用户 => 队伍关系表
+                List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
+                if (CollectionUtils.isNotEmpty(userTeamList)) {
+                    // 获取队伍 id 列表
+                    List<Long> teamIdList = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toList());
+                    // 查询队伍列表
+                    queryWrapper.in("id", teamIdList);
+                }
+            }
         }
-        // 不展示已经过期的队伍或者没有设置过期时间的队伍
-        queryWrapper.and(wrapper -> wrapper.gt("expireTime", new Date()).or().isNull("expireTime"));
         return queryWrapper;
     }
 
     /**
      * 根据队伍列表构建用户列表
+     *
      * @param teamList 队伍列表
      * @return 查询条件
      */
@@ -164,7 +181,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     /**
      * @param team      队伍信息
      * @param loginUser 当前登录用户
-     * @return  返回创建的队伍id
+     * @return 返回创建的队伍id
      */
     @Override
     @Transactional(rollbackFor = Exception.class) // 事务回滚
@@ -264,9 +281,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
      * @return 返回队伍列表
      */
     @Override
-    public List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean isAdmin) {
+    public List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean isAdmin, long loginUserId) {
         // 1、根据查询条件构造查询条件
-        QueryWrapper<Team> queryWrapper = getQueryWrapper(teamQuery, isAdmin);
+        QueryWrapper<Team> queryWrapper = getQueryWrapper(teamQuery, isAdmin, loginUserId);
         // 2、查询队伍列表
         List<Team> teamList = this.list(queryWrapper);
         // 3、关联查询用户信息
@@ -278,14 +295,15 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     /**
      * 分页查询队伍列表
+     *
      * @param teamQuery 查询条件
-     * @param isAdmin 是否是管理员
+     * @param isAdmin   是否是管理员
      * @return 返回队伍列表
      */
     @Override
-    public PageResponse<TeamUserVO> getTeamListByPage(TeamQuery teamQuery, boolean isAdmin) {
+    public PageResponse<TeamUserVO> getTeamListByPage(TeamQuery teamQuery, boolean isAdmin, long loginUserId) {
         // 1、根据查询条件构造查询条件
-        QueryWrapper<Team> queryWrapper = getQueryWrapper(teamQuery, isAdmin);
+        QueryWrapper<Team> queryWrapper = getQueryWrapper(teamQuery, isAdmin, loginUserId);
         // 2、分页查询队伍列表
         Page<Team> page = new Page<>(teamQuery.getPageNum(), teamQuery.getPageSize());
         IPage<Team> teamIPage = this.page(page, queryWrapper);
@@ -379,8 +397,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     /**
      * 加入队伍
-     * @param teamJoinRequest  加入队伍请求参数
-     * @param loginUserId 当前登录用户id
+     *
+     * @param teamJoinRequest 加入队伍请求参数
+     * @param loginUserId     当前登录用户id
      * @return 是否加入成功
      */
     // todo 需要加锁，防止并发，因为同一时间可能有多个人加入同一个队伍，或者同一个发出多次加入队伍请求，导致队伍人数超过限制
@@ -449,8 +468,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     /**
      * 退出队伍
+     *
      * @param teamQuitRequest 退出队伍请求参数
-     * @param loginUserId 当前登录用户id
+     * @param loginUserId     当前登录用户id
      * @return 是否退出成功
      */
     @Override

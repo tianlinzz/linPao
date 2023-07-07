@@ -124,7 +124,8 @@ public class TeamController {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         boolean isAdmin = userService.isAdmin(request);
-        List<TeamUserVO> result = teamService.getTeamList(teamQuery, isAdmin);
+        long loginUserId = loginUser.getId();
+        List<TeamUserVO> result = teamService.getTeamList(teamQuery, isAdmin, loginUserId);
         return ResultUtils.success(result);
     }
 
@@ -143,7 +144,8 @@ public class TeamController {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         boolean isAdmin = userService.isAdmin(request);
-        PageResponse<TeamUserVO> pageResponse = teamService.getTeamListByPage(teamQuery, isAdmin);
+        long loginUserId = loginUser.getId();
+        PageResponse<TeamUserVO> pageResponse = teamService.getTeamListByPage(teamQuery, isAdmin, loginUserId);
         return ResultUtils.success(pageResponse);
     }
 

@@ -37,7 +37,7 @@ public interface TeamService extends IService<Team> {
      * @param teamQuery 查询条件
      * @return 返回队伍列表
      */
-    List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean idAdmin);
+    List<TeamUserVO> getTeamList(TeamQuery teamQuery, boolean idAdmin, long loginUserId);
 
     /**
      * 分页查询队伍列表
@@ -45,7 +45,7 @@ public interface TeamService extends IService<Team> {
      * @param teamQuery 查询条件
      * @return 返回队伍列表
      */
-    PageResponse<TeamUserVO> getTeamListByPage(TeamQuery teamQuery, boolean isAdmin);
+    PageResponse<TeamUserVO> getTeamListByPage(TeamQuery teamQuery, boolean isAdmin, long loginUserId);
 
     /**
      * @param TeamUpdateRequest 队伍修改的信息
