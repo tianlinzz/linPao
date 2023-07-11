@@ -263,7 +263,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         //  超时时间 > 当前时间
         Date timeout = Optional.ofNullable(team.getExpireTime()).orElse(new Date());
         if (timeout.before(new Date())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍超时时间不合法");
         }
         //  校验用户最多创建 5 个队伍
         String lockKey = String.format("%s:create:%s:lock", REDIS_TEAM_PREFIX, loginUser.getId()); // 生成用户自己加入队伍对应的锁
