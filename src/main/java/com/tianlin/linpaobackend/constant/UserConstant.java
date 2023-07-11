@@ -22,4 +22,6 @@ public interface UserConstant {
     int TIME_OUT = 60 * 60 * 24 * 7; // 7天
 
     String REDIS_USER_PREFIX = "linpao:user";
+
+    String REDIS_TEAM_PREFIX = "linpao:team";
 }

@@ -26,6 +26,8 @@ import com.tianlin.linpaobackend.service.UserTeamService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.tianlin.linpaobackend.constant.UserConstant.REDIS_TEAM_PREFIX;
 
 /**
  * @author 张添琳
@@ -51,6 +56,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedissonClient redissonClient;
 
 
     /**
@@ -103,7 +111,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 queryWrapper.and(wrapper -> wrapper.like("name", keyword).or().like("description", keyword));
             }
             // 是否只查询自己创建的队伍
-            Boolean isOnlyCreate= teamQuery.getIsOnlyCreate();
+            Boolean isOnlyCreate = teamQuery.getIsOnlyCreate();
             if (isOnlyCreate != null && isOnlyCreate) {
                 queryWrapper.eq("userId", loginUserId);
             }
@@ -258,29 +266,45 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍不存在");
         }
         //  校验用户最多创建 5 个队伍
-        // todo 用户可能在同一时间创建多个队伍，需要加锁
-        QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userId);
-        long count = this.count(queryWrapper);
-        if (count >= 5) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍数量超过限制");
+        String lockKey = String.format("%s:create:%s:lock", REDIS_TEAM_PREFIX, loginUser.getId()); // 生成用户自己加入队伍对应的锁
+        RLock lock = redissonClient.getLock(lockKey);
+        try {
+            while (true) {
+                // 只有一个线程能拿到锁
+                if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) { // -1表示会自动续期，续期时间为30s
+                    QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.eq("userId", userId);
+                    long count = this.count(queryWrapper);
+                    if (count >= 5) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍数量超过限制");
+                    }
+                    //  插入队伍信息到队伍表
+                    team.setUserId(userId);
+                    boolean result = this.save(team);
+                    if (!result) { // 插入失败，派出异常，事务就会自动回滚
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍创建失败");
+                    }
+                    //  插入用户 => 队伍关系到关系表
+                    UserTeam userTeam = new UserTeam();
+                    userTeam.setUserId(userId);
+                    userTeam.setTeamId(team.getId());
+                    userTeam.setJoinTime(new Date());
+                    result = userTeamService.save(userTeam);
+                    if (!result) { // 插入失败，派出异常，事务就会自动回滚
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍创建失败");
+                    }
+                    return team.getId();
+                }
+            }
+        } catch (InterruptedException e) {
+            log.error("get lock error:{}" + e.getMessage());
+        } finally {
+            // 释放锁, 防止死锁
+            if (lock.isHeldByCurrentThread()) { // 只有当前线程持有锁时才释放
+                lock.unlock();
+            }
         }
-        //  插入队伍信息到队伍表
-        team.setUserId(userId);
-        boolean result = this.save(team);
-        if (!result) { // 插入失败，派出异常，事务就会自动回滚
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍创建失败");
-        }
-        //  插入用户 => 队伍关系到关系表
-        UserTeam userTeam = new UserTeam();
-        userTeam.setUserId(userId);
-        userTeam.setTeamId(team.getId());
-        userTeam.setJoinTime(new Date());
-        result = userTeamService.save(userTeam);
-        if (!result) { // 插入失败，派出异常，事务就会自动回滚
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍创建失败");
-        }
-        return team.getId();
+        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍创建失败");
     }
 
     @Override
@@ -427,7 +451,6 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
      * @param loginUserId     当前登录用户id
      * @return 是否加入成功
      */
-    // todo 需要加锁，防止并发，因为同一时间可能有多个人加入同一个队伍，或者同一个发出多次加入队伍请求，导致队伍人数超过限制
     @Override
     public boolean joinTeam(TeamJoinRequest teamJoinRequest, long loginUserId) {
         long teamId = teamJoinRequest.getTeamId();
@@ -472,23 +495,40 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         // 查询用户加入的队伍数量
         userTeamQueryWrapper = new QueryWrapper<>();
         userTeamQueryWrapper.eq("userId", loginUserId);
-        long hasJoinNum = userTeamService.count(userTeamQueryWrapper);
-        if (hasJoinNum > 5) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "每个用户最多只能加入5个队伍");
+        String lockKey = String.format("%s:join:%s:%s:lock", REDIS_TEAM_PREFIX, loginUserId, teamId); // 生成用户自己加入队伍对应的锁
+        RLock lock = redissonClient.getLock(lockKey);
+        try {
+            while (true) {
+                // 只有一个线程能拿到锁
+                if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) { // -1表示会自动续期，续期时间为30s
+                    long hasJoinNum = userTeamService.count(userTeamQueryWrapper);
+                    if (hasJoinNum > 5) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "每个用户最多只能加入5个队伍");
+                    }
+                    // 查询队伍已经加入的人数
+                    userTeamQueryWrapper = new QueryWrapper<>();
+                    userTeamQueryWrapper.eq("teamId", teamId);
+                    long teamJoinNum = userTeamService.count(userTeamQueryWrapper);
+                    if (teamJoinNum >= team.getMaxNum()) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍人数已满");
+                    }
+                    // 加入队伍
+                    UserTeam newUserTeam = new UserTeam();
+                    newUserTeam.setTeamId(teamId);
+                    newUserTeam.setUserId(loginUserId);
+                    newUserTeam.setJoinTime(new Date());
+                    return userTeamService.save(newUserTeam);
+                }
+            }
+        } catch (InterruptedException e) {
+            log.error("get lock error:{}" + e.getMessage());
+        } finally {
+            // 释放锁, 防止死锁
+            if (lock.isHeldByCurrentThread()) { // 只有当前线程持有锁时才释放
+                lock.unlock();
+            }
         }
-        // 查询队伍已经加入的人数
-        userTeamQueryWrapper = new QueryWrapper<>();
-        userTeamQueryWrapper.eq("teamId", teamId);
-        long teamJoinNum = userTeamService.count(userTeamQueryWrapper);
-        if (teamJoinNum >= team.getMaxNum()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍人数已满");
-        }
-        // 加入队伍
-        UserTeam newUserTeam = new UserTeam();
-        newUserTeam.setTeamId(teamId);
-        newUserTeam.setUserId(loginUserId);
-        newUserTeam.setJoinTime(new Date());
-        return userTeamService.save(newUserTeam);
+        return false;
     }
 
     /**
